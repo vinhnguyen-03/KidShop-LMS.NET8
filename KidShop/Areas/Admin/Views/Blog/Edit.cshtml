@@ -1,0 +1,84 @@
+﻿@model KidShop.Models.tbl_Blog
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<div class="content-body">
+    <div class="container-fluid">
+
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Sửa bài viết</h4>
+            </div>
+            <div class="card-body">
+                <div class="form-validation">
+                    <form asp-action="Edit" method="post" class="form-valide" novalidate="novalidate">
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                        <input asp-for="BlogID" type="hidden" />
+
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <label asp-for="Title">Tiêu đề bài viết</label>
+                                <input asp-for="Title" class="form-control" placeholder="Nhập tiêu đề" />
+                                <span asp-validation-for="Title" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label asp-for="Abstract">Mô tả</label>
+                                <input asp-for="Abstract" class="form-control" placeholder="Nhập mô tả" />
+                                <span asp-validation-for="Abstract" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label asp-for="Contents">Nội dung chi tiết</label>
+                                <textarea asp-for="Contents" class="form-control" rows="6" placeholder="Nhập nội dung"></textarea>
+                                <span asp-validation-for="Contents" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Tác giả</label>
+                                <input class="form-control" value="@Model.UserID" readonly />
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="control-label">Hình ảnh</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <button class="btn btn-success" type="button" onclick="openDialogImage()">Choose a pic</button>
+                                </div>
+                                <input type="text" class="form-control" asp-for="Image" id="file_input1" aria-describedby="button-addon2">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-6 d-flex align-items-center">
+                                <label class="mb-0 mr-2">Hiển thị</label>
+                                @Html.CheckBox("IsActive", Model.IsActive, new { @class = "mr-2" })
+                                <span>Cho phép hiển thị</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-12 text-right">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-file-plus-fill"></i> Lưu
+                                </button>
+                                <a asp-controller="Blog" asp-action="Index" class="btn btn-warning ml-2">Quay lại</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section HeadContent {
+    @{
+        var summerNote = new KidShop.Areas.Admin.Models.SummerNote("#Contents");
+        <partial name="_SummerNote" model="summerNote" />
+    }
+}
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

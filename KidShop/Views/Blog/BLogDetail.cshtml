@@ -1,0 +1,256 @@
+﻿@using KidShop.Utilities
+@using KidShop.ViewModel
+@using KidShop.ViewModel.Blog
+@model BlogDetailVM
+
+ <!-- Blog Details Hero Begin -->
+<section class="blog-details-hero set-bg" data-setbg="/img/breadcrumb.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="blog__details__hero__text">
+                    <h2>@Model.Blog.Title</h2>
+                    <ul>
+                        <li>Tác giả: @(Model.Blog.User != null ? Model.Blog.User.FullName ?? Model.Blog.User.Username : "Ẩn danh")</li>
+                        <li>Ngày tạo: @Model.Blog.CreatedDate?.ToString("dd/MM/yyyy")</li>
+                       
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Blog Details Hero End -->
+
+<!-- Blog Details Section Begin -->
+<section class="blog-details spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-4 order-md-1 order-2">
+                <div class="blog__sidebar">
+                    <!-- Bai viet gan day-->
+                    <div class="blog__sidebar__item">
+                        <h4>Bài viết gần đây</h4>
+                        <div class="blog__sidebar__recent">
+                            @foreach (var item in ViewBag.OtherBlogs ?? new List<KidShop.Models.tbl_Blog>())
+                            {
+                                <a asp-controller="Blog" asp-action="BlogDetail" asp-route-id="@item.BlogID" class="blog__sidebar__recent__item">
+                                    <div class="blog__sidebar__recent__item__pic">
+                                        <img src="@item.Image" alt="@item.Title" style="width:70px; height:70px; object-fit:cover;">
+                                    </div>
+                                    <div class="blog__sidebar__recent__item__text">
+                                        <h6>@item.Title</h6>
+                                        <span>@item.CreatedDate.ToString("dd/MM/yyyy")</span>
+                                    </div>
+                                </a>
+                            }          
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="col-lg-9 col-md-8 order-md-1 order-1">
+                <div class="blog__details__text">
+                      @Html.Raw(Model.Blog.Contents)
+                </div>
+                @if (TempData["Message"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
+                        @TempData["Message"]
+                        <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                <!-- Lưu bài viết -->
+                @if (Model.BlogIsSaved)
+                {
+                    <form asp-controller="SaveBlog" asp-action="Remove" method="post" class="d-inline">
+                        <input type="hidden" name="blogId" value="@Model.Blog.BlogID" />
+                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                            <i class="fa fa-times"></i> Bỏ lưu
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-controller="SaveBlog" asp-action="Add" method="post" class="d-inline">
+                        <input type="hidden" name="blogId" value="@Model.Blog.BlogID" />
+                        <button type="submit" class="btn btn-outline-primary btn-sm">
+                            <i class="fa fa-bookmark"></i> Lưu bài viết
+                        </button>
+                    </form>
+                }
+                <!-- AI Hỗ trợ bài viết -->
+                <div class="blog__ai-support mt-4 p-3 rounded shadow-sm" style="background-color: #f8f9fa;">
+                    <h4 class="mb-3">🤖 Trợ lý AI</h4>
+
+                    <!-- Tóm tắt bằng AI -->
+                    <button id="btnSummarize" class="btn btn-primary mb-3">Tóm tắt bài viết bằng AI</button>
+                    <div id="aiSummary" class="alert alert-info" style="display:none; white-space: pre-line;"></div>
+
+                    <hr>
+
+                    <!-- Chatbot hỏi đáp -->
+                    <h5 class="mt-3">Hỏi AI về bài viết này</h5>
+                    <div class="input-group mb-3">
+                        <input id="aiQuestion" type="text" class="form-control" placeholder="Nhập câu hỏi...">
+                        <button id="btnAskAI" class="btn btn-success">Hỏi AI</button>
+                    </div>
+                    <div id="aiAnswer" class="alert alert-secondary" style="display:none; white-space: pre-line;"></div>
+                </div>
+                <!-- End AI -->
+
+                <!-- Comment Section Begin -->
+                <div class="blog__details__comments">
+                    <h4>Bình luận</h4>
+                    @if (Model.Comments.Any())
+                    {
+                        <!-- Existing Comments -->
+                        <div class="blog__details__comments__list">
+                            @foreach (var cmt in Model.Comments)
+                            {
+                                <div class="blog__details__comment">
+
+                                    <div class="blog__details__comment__author-pic">
+                                        <img src="/img/avatar_default.jpg" alt="@cmt.FullName">
+                                    </div>
+
+                                    <div class="blog__details__comment__text">
+                                        <h6>@cmt.FullName <span>@cmt.CreatedDate?.ToString("dd/MM/yyyy")</span></h6>
+                                        <p>@cmt.Contents</p>
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                    }
+                    else
+                    {
+                        <p>Chưa có bình luận nào.</p>
+                    }
+                    <!-- Comment Form -->
+                    <div class="blog__details__comment__form">
+                        <h5>Viết bình luận</h5>
+                        <!-- Thông báo lỗi / thành công -->
+                        @if (TempData["CommentError"] != null)
+                        {
+                            <div class="alert alert-warning" style="margin-bottom: 10px;">
+                                @TempData["CommentError"]
+                            </div>
+                        }
+                        else if (TempData["CommentSuccess"] != null)
+                        {
+                            <div class="alert alert-success" style="margin-bottom: 10px;">
+                                @TempData["CommentSuccess"]
+                            </div>
+                        }
+                        <!-- Form thêm bình luận -->
+                        <form asp-controller="Blog" asp-action="AddComment" method="post">
+                            <input type="hidden" name="blogId" value="@Model.Blog.BlogID" />
+                            <textarea name="contents" rows="4" placeholder="Nội dung bình luận" required></textarea>
+                            <button type="submit">Gửi bình luận</button>
+                        </form>
+                    </div>
+                </div>
+                <!-- Comment Section End -->
+
+                <div class="blog__details__content">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="blog__details__author">
+
+                                <div class="blog__details__author__pic">
+                                    <img src="/img/avatar_default.jpg" alt="">
+                                </div>
+                                <div class="blog__details__author__text">
+                                    @if (string.IsNullOrEmpty((Model.Blog.User != null ? Model.Blog.User.FullName ?? Model.Blog.User.Username : "Ẩn danh")))
+                                    {
+                                        <h6>Ẩn danh</h6>
+                                    }
+                                    else
+                                    {
+                                        <h6>@(Model.Blog.User != null ? Model.Blog.User.FullName ?? Model.Blog.User.Username : "Ẩn danh")</h6>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="blog__details__widget">
+                                <ul>
+                                    <li><span>Thể loại:</span> Mẹ và bé</li>
+                                   
+                                </ul>
+
+                                <div class="blog__details__social">
+                                    <a href="#"><i class="fa fa-facebook"></i></a>
+                                    <a href="#"><i class="fa fa-twitter"></i></a>
+                                    <a href="#"><i class="fa fa-google-plus"></i></a>
+                                    <a href="#"><i class="fa fa-linkedin"></i></a>
+                                    <a href="#"><i class="fa fa-envelope"></i></a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Blog Details Section End -->
+
+<!-- Related Blog Section Begin -->
+@await Component.InvokeAsync("RecentBlog")
+<!-- Related Blog Section End -->
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // 👉 Tóm tắt bài viết bằng AI
+            const btnSummarize = document.getElementById("btnSummarize");
+            btnSummarize.addEventListener("click", function () {
+                const btn = this;
+                btn.disabled = true;
+                btn.innerText = "Đang tóm tắt...";
+                const aiSummary = document.getElementById("aiSummary");
+                aiSummary.style.display = "block";
+                aiSummary.innerText = "⏳ Đang tạo tóm tắt...";
+
+                fetch(`/Blog/SummarizeAI?blogId=@Model.Blog.BlogID`, { method: "POST" })
+                    .then(res => res.json())
+                    .then(data => aiSummary.innerText = data.success ? data.summary : data.message)
+                    .catch(() => aiSummary.innerText = "❌ Lỗi khi gọi AI.")
+                    .finally(() => {
+                        btn.disabled = false;
+                        btn.innerText = "Tóm tắt bài viết bằng AI";
+                    });
+            });
+
+            // 👉 Chatbot hỏi đáp
+            const btnAskAI = document.getElementById("btnAskAI");
+            btnAskAI.addEventListener("click", function () {
+                const question = document.getElementById("aiQuestion").value.trim();
+                if (!question) return alert("Vui lòng nhập câu hỏi!");
+
+                const btn = this;
+                btn.disabled = true;
+                btn.innerText = "Đang trả lời...";
+                const aiAnswer = document.getElementById("aiAnswer");
+                aiAnswer.style.display = "block";
+                aiAnswer.innerText = "💬 AI đang suy nghĩ...";
+
+                fetch(`/Blog/AskAI`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: `blogId=@Model.Blog.BlogID&question=${encodeURIComponent(question)}`
+                })
+                    .then(res => res.json())
+                    .then(data => aiAnswer.innerText = data.success ? data.answer : data.message)
+                    .catch(() => aiAnswer.innerText = "❌ Lỗi khi hỏi AI.")
+                    .finally(() => {
+                        btn.disabled = false;
+                        btn.innerText = "Hỏi AI";
+                    });
+            });
+        });
+    </script>
+}

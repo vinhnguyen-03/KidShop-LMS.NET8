@@ -1,0 +1,34 @@
+﻿@model List<tbl_Quiz>
+
+@if (Model != null && Model.Any())
+{
+    <ul class="list-group">
+        @foreach (var q in Model)
+        {
+            <li class="list-group-item mb-3 quiz-item" data-answer="@q.Answer">
+                <strong>@q.Question</strong>
+                @if (!string.IsNullOrEmpty(q.Options))
+                {
+                    <ul class="list-unstyled mt-2">
+                        @foreach (var opt in q.Options.Split('|'))
+                        {
+                            <li>
+                                <label>
+                                    <input type="radio" name="quiz_@q.QuizID" value="@opt" class="quiz-option">
+                                    @opt
+                                </label>
+                            </li>
+                        }
+                    </ul>
+                }
+                <div class="quiz-feedback mt-2" style="display:none;"></div>
+            </li>
+        }
+    </ul>
+
+    <button class="btn btn-success mt-3" id="checkQuizBtn">Kiểm tra đáp án</button>
+}
+else
+{
+    <p class="text-muted">Chưa có câu hỏi cho bài học này.</p>
+}

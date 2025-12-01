@@ -1,0 +1,105 @@
+﻿@model IEnumerable<KidShop.Models.tbl_Blog>
+@using KidShop.Models;
+@using KidShop.Utilities;
+
+<!-- Breadcrumb Section Begin -->
+<section class="breadcrumb-section set-bg" data-setbg="/img/breadcrumb.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>Bài viết</h2>
+                    <div class="breadcrumb__option">
+                        <a asp-controller="Home" asp-action="Index">Trang chủ</a>
+                        <span>Bài viết</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Breadcrumb Section End -->
+
+<!-- Blog Section Begin -->
+<section class="blog spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-5">
+                <div class="blog__sidebar">
+
+                    <!-- Search -->
+                    <div class="blog__sidebar__search">
+                        <form asp-action="Index" asp-controller="Blog" method="get">
+                            <input type="text" name="keyword" placeholder="Tìm kiếm..." value="@ViewBag.Keyword">
+                            <button type="submit"><span class="icon_search"></span></button>
+                        </form>
+                    </div>
+
+                    <!-- Bai viet gan day-->
+                    <div class="blog__sidebar__item">
+                        <h4>Bài viết gần đây</h4>
+                        <div class="blog__sidebar__recent">
+                            @foreach (var item in ViewBag.OtherBlogs ?? new List<KidShop.Models.tbl_Blog>())
+                            {
+                                <a asp-controller="Blog" asp-action="BlogDetail" asp-route-id="@item.BlogID" class="blog__sidebar__recent__item">
+                                    <div class="blog__sidebar__recent__item__pic">
+                                        <img src="@item.Image" alt="@item.Title" style="width:70px; height:70px; object-fit:cover;">
+                                    </div>
+                                    <div class="blog__sidebar__recent__item__text">
+                                        <h6>@item.Title</h6>
+                                        <span>@item.CreatedDate.ToString("dd/MM/yyyy")</span>
+                                    </div>
+                                </a>
+                            }
+                  
+                        </div>
+                    </div>
+                    <!-- Bai viet gan day-->
+                </div>
+            </div>
+
+            <!-- Bai viet-->
+            <div class="col-lg-8 col-md-7">
+                <div class="row">
+                    @foreach (var item in Model)
+                    {
+                        <div class="col-lg-6 col-md-6 col-sm-6">
+                            <div class="blog__item">
+                                <div class="blog__item__pic">
+                                    <img src="@item.Image" alt="@item.Title" style="width:370px; height:266px; object-fit:cover; border-radius:6px;" />
+                                </div>
+                                <div class="blog__item__text">
+                                    <ul>
+                                        <li><i class="fa fa-calendar-o"></i> @item.CreatedDate?.ToString("dd/MM/yyyy")</li>
+                                         
+                                    </ul>
+                                    <h5><a asp-controller="Blog" asp-action="BlogDetail" asp-route-id="@item.BlogID">@item.Title</a></h5>
+                                    <p>
+                                        @item.Abstract
+                                    </p>
+                                    <a asp-controller="Blog" asp-action="BlogDetail" asp-route-id="@item.BlogID" class="blog__btn">Xem thêm <span class="arrow_right"></span></a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="col-lg-12">
+                        <div class="product__pagination blog__pagination">
+                            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                            {
+                                <a asp-action="Index"
+                                   asp-controller="Blog"
+                                   asp-route-page="@i"
+                                   asp-route-keyword="@ViewBag.Keyword"
+                                   class="@(i == ViewBag.CurrentPage ? "active" : "")">
+                                    @i
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Blog Section End -->

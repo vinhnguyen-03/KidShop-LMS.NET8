@@ -1,0 +1,180 @@
+﻿@model IEnumerable<KidShop.Models.tbl_Course>
+@using KidShop.Models;
+@using KidShop.Utilities;
+
+<!-- Breadcrumb Section Begin -->
+<section class="breadcrumb-section set-bg" data-setbg="/img/breadcrumb.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>Khoá học dành cho cha mẹ</h2>
+                    <div class="breadcrumb__option">
+                        <a asp-controller="Home" asp-action="Index">Trang chủ</a>
+                        <span>Khoá học dành cho cha mẹ</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Breadcrumb Section End -->
+
+<!-- Course Section Begin -->
+<section class="course-list spad">
+    <div class="container">
+        <!-- Phần giới thiệu khóa học -->
+        <div class="row mb-5" style="background-color: #f8f9fa;">
+            <div class="col-lg-12 text-center">
+                <h2 class="section-title mb-5">Bạn có nên đăng ký khóa học?</h2>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="benefit-card p-4 shadow-sm rounded h-100 text-center">
+                    <img src="https://daycontuky.edubit.vn/data/landingpage/photo_5f4c952506ed3f2002ee5c561_1598865502.jpg"
+                         alt="Kiến thức chuyên sâu"
+                         class="benefit-icon mb-3"
+                         style="width:112px; height:112px; object-fit:cover; border-radius:50%; display:block; margin:0 auto 15px;">
+                    <h5 class="fw-bold mb-2 text-primary">Kiến thức chuyên sâu</h5>
+                    <p class="text-muted" style="font-size:15px;">
+                        Tích lũy đầy đủ kiến thức về kỹ năng chơi – một kỹ năng tự nhiên nhưng lại là mắt xích vô cùng quan trọng trong sự tiến bộ của trẻ, giúp bé thông minh hơn, phát triển ngôn ngữ và các kỹ năng xã hội.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="benefit-card p-4 shadow-sm rounded h-100 text-center">
+                    <img src="https://daycontuky.edubit.vn/data/landingpage/photo_5f4c952506ed3f2002ee5c562_1598865665.jpg"
+                         alt="Lợi ích của kỹ năng chơi"
+                         class="benefit-icon mb-3"
+                         style="width:112px; height:112px; object-fit:cover; border-radius:50%; display:block; margin:0 auto 15px;">
+                    <h5 class="fw-bold mb-2 text-success">Lợi ích của kỹ năng chơi</h5>
+                    <p class="text-muted" style="font-size:15px;">
+                        Hiểu được lợi ích của chơi và tầm quan trọng của ba mẹ trong sự tiến bộ của em bé.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="benefit-card p-4 shadow-sm rounded h-100 text-center">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8QjML8wJ1t7NxOQg3DLIL5DG5PphDsueNAg&s"
+                         alt="Tiết kiệm và tiện lợi"
+                         class="benefit-icon mb-3"
+                         style="width:112px; height:112px; object-fit:cover; border-radius:50%; display:block; margin:0 auto 15px;">
+                    <h5 class="fw-bold mb-2 text-warning">Tiết kiệm và tiện lợi</h5>
+                    <p class="text-muted" style="font-size:15px;">
+                        Tiết kiệm rất nhiều chi phí, thời gian đi lại, học mọi lúc, học trọn đời vì khóa học hoàn toàn là <strong>online</strong>.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tiêu đề -->
+        <div class="row mb-4">
+            <div class="col-lg-12 text-center">
+                <h2 class="section-title">Danh Sách Khoá Học</h2>
+                <p>Khám phá các khoá học hữu ích và nổi bật nhất</p>
+            </div>
+        </div>
+
+        <!-- Thanh tìm kiếm -->
+        <div class="row mb-4">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <form asp-action="Index" asp-controller="Course" class="d-flex justify-content-center" method="get">
+                    <input type="text" name="keyword" class="form-control me-2" placeholder="🔍 Tìm kiếm khoá học..." value="@ViewBag.Keyword"
+                           style="border-radius: 30px; padding: 8px 16px; font-size: 15px;">
+                    <button type="submit"><span class="icon_search"></span></button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Danh sách khoá học -->
+        <div class="row">
+         @if (Model != null && Model.Any())
+            {
+              @foreach (var item in Model)
+                  {
+                    <!-- Course item -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="course__item card shadow-sm border-0 h-100">
+
+                            <a asp-controller="Course" asp-action="CourseDetail" asp-route-id="@item.CourseID" class="text-decoration-none text-dark">
+                                <div class="course__thumb position-relative overflow-hidden" style="border-radius: 10px 10px 0 0;">
+                                    <img src="@item.Image" alt="@item.CourseName"
+                                         class="w-100" style="height: 220px; object-fit: cover;">
+                                    @if (!string.IsNullOrEmpty(item.Tag))
+                                    {
+                                        <span class="badge bg-success position-absolute"
+                                              style="top:10px; left:10px;">@item.Tag</span>
+                                    }
+                                </div>
+                            </a>
+                             <div class="card-body">
+                                    <h5 class="card-title text-truncate mb-1">
+                                        <a asp-controller="Course" asp-action="CourseDetail" asp-route-id="@item.CourseID">
+                                        @item.CourseName
+                                        </a>
+                                    </h5>
+                                    <p class="text-muted mb-2" style="font-size:14px;">
+                                    Giảng viên: <strong>@item.Lecturers?.LecturerName </strong>
+                                    </p>
+                                    @if (item.PriceSale.HasValue && item.Price.HasValue)
+                                    {
+                                        <p class="fw-bold text-primary mb-0" style="font-size:16px;">
+                                            @item.PriceSale.Value.ToString("N0")₫
+                                        </p>
+                                        <p class="text-muted" style="text-decoration: line-through; font-size:14px;">
+                                            @item.Price.Value.ToString("N0")₫
+                                        </p>
+                                    }
+                                    else if (item.Price.HasValue)
+                                    {
+                                        <p class="fw-bold text-primary mb-0" style="font-size:16px;">
+                                            @item.Price.Value.ToString("N0")₫
+                                        </p>
+                                    }
+                                    else
+                                    {
+                                        <p class="fw-bold text-success mb-0" style="font-size:16px;">
+                                            Miễn phí
+                                        </p>
+                                    }
+                                    <div class="card-footer bg-white border-0 text-muted small">
+                                        <i class="fa fa-calendar"></i>@item.CreatedDate?.ToString("dd/MM/yyyy")
+                                    </div>
+                              </div>
+ 
+                        </div>
+                    </div>
+                    <!-- /Course item -->
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center">
+                    <p style="font-size:18px; color:#888; margin-top:20px;">❌ Không tìm thấy khoá học phù hợp</p>
+                </div>
+            }
+        </div>
+
+        <!-- Phân trang -->
+        <div class="row mt-4">
+            <div class="col-lg-12 text-center">
+                <div class="product__pagination d-inline-block">
+                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        <a asp-action="Index"
+                           asp-controller="Course"
+                           asp-route-page="@i"
+                           asp-route-keyword="@ViewBag.Keyword"
+                           class="@(i == ViewBag.CurrentPage ? "active" : "")">
+                            @i
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+<!-- Course Section End -->

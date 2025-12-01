@@ -1,0 +1,86 @@
+﻿@using KidShop.ViewModel.Product
+@model RevenueProductVM
+
+<div class="content-body">
+	<div class="container-fluid">
+
+		<div class="form-head mb-sm-5 mb-3 d-flex flex-wrap align-items-center">
+			<h2 class="font-w600 title mb-2 mr-auto">Trang quản lý</h2>
+		</div>
+
+		<div class="row">
+
+			<!-- Biểu đồ doanh thu theo tháng -->
+			<div class="col-xl-12 col-lg-12 mb-4">
+				<div class="card shadow-sm p-3">
+					<h4 class="mb-3">Biểu đồ doanh thu theo tháng</h4>
+					<canvas id="revenueChart" height="120"></canvas>
+				</div>
+			</div>
+
+			<!-- Đơn hàng chưa hoàn thành -->
+			<div class="col-xl-12 col-lg-12">
+				<div class="card shadow-sm p-3">
+					<h4 class="mb-3">Đơn hàng chưa hoàn thành</h4>
+					<p><b>Tổng tiền:</b> @Model.TotalPendingAmount.ToString("N0") đ</p>
+
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th>Mã đơn</th>
+								<th>Người nhận</th>
+								<th>Trạng thái</th>
+								<th>Tổng tiền</th>
+								<th>Ngày tạo</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var item in Model.PendingOrders)
+							{
+								<tr>
+									<td>@item.OrderID</td>
+									<td>@item.ReceiverName</td>
+									<td>@item.Status</td>
+									<td>@item.TotalAmount.ToString("N0") đ</td>
+									<td>@item.CreatedAt</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+	// ================== BIỂU ĐỒ DOANH THU ==================
+	const labels = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+												Model.MonthlyRevenue.Select(x => $"{x.Month}/{x.Year}")));
+
+	const data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+												Model.MonthlyRevenue.Select(x => x.Revenue)));
+
+	new Chart(document.getElementById('revenueChart'), {
+		type: 'bar',
+		data: {
+			labels: labels,
+			datasets: [{
+				label: "Doanh thu",
+				data: data,
+				backgroundColor: "rgba(54, 162, 235, 0.6)",
+				borderColor: "rgba(54, 162, 235, 1)",
+				borderWidth: 1
+			}]
+		},
+		options: {
+			scales: {
+				y: {
+					beginAtZero: true
+				}
+			}
+		}
+	});
+</script>

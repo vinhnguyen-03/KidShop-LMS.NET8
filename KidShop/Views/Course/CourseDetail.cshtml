@@ -1,0 +1,243 @@
+﻿@using KidShop.Utilities
+@using KidShop.ViewModel
+@using KidShop.ViewModel.Course
+@model CourseDetailVM
+
+<!-- Breadcrumb Section Begin -->
+<section class="breadcrumb-section set-bg" data-setbg="/img/breadcrumb.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>@Model.Course.CourseName</h2>
+                    <div class="breadcrumb__option">
+                        <a asp-controller="Course" asp-action="Index">Trang chủ</a>
+                        <span>@Model.Course.CourseName</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Breadcrumb Section End -->
+
+<!-- Course Section Begin -->
+<section class="course-list spad">
+    <div class="container">
+        <div class="row">
+            <!-- Cột trái: Video và mô tả -->
+            <div class="col-lg-8 col-md-12 mb-4">
+                <div class="course-video shadow-sm rounded overflow-hidden">
+                   
+                    @if (Model.FirstVideo != null && !string.IsNullOrEmpty(Model.FirstVideo.Link))
+                    {
+                        var video = Model.FirstVideo;
+
+                        if (video.IsYouTube)
+                        {
+                            <iframe style="width:100%; height:450px;"
+                                    src="@video.Link.Replace("watch?v=", "embed/")"
+                                    title="@video.Title"
+                                    frameborder="0"
+                                    allowfullscreen></iframe>
+                        }
+                        else
+                        {
+                            <video style="width:100%; height:450px;" controls>
+                                <source src="@video.Link" type="video/mp4">
+                                Trình duyệt của bạn không hỗ trợ phát video.
+                            </video>
+                        }
+                    }
+                    else
+                    {
+                        <p>Không có video nào cho khóa học này.</p>
+                    }
+                </div>
+
+                <!-- Mô tả ngắn -->
+                <div class="mt-4">
+                    <h3 class="fw-bold mb-3">Bạn sẽ được gì ở khoá học này</h3>
+                    <p class="text-muted" style="font-size:16px;">
+                        @Html.Raw(Model.Course.Describe)
+                    </p>
+                </div>
+
+                <!-- Mô tả chi tiết khóa học -->
+                <div class="course-detail mt-5">
+                    <h4 class="fw-bold mb-3">📘 Chi tiết khóa học</h4>
+                    <div style="font-size:16px; line-height:1.7;">
+                        @Html.Raw(Model.Course.Contents)
+                    </div>
+                </div>
+
+                <!-- Thông tin giảng viên -->
+                @if (Model.Lecturer != null)
+                {
+                    <div class="instructor-info mt-5 p-4 border rounded shadow-sm bg-light">
+                        <h4 class="fw-bold mb-3">👩‍🏫 Giảng viên</h4>
+                        <div class="d-flex align-items-center">
+                            <img src="@(string.IsNullOrEmpty(Model.Lecturer.Avatar) ? "/img/avatar_default.jpg" : Model.Lecturer.Avatar)"
+                             alt="@Model.Lecturer.LecturerName"
+                             style="width:90px; height:90px; object-fit:cover; border-radius:50%; margin-right:15px;">
+
+                            <div>
+                                <h5 class="fw-bold mb-1">@Model.Lecturer.LecturerName</h5>
+
+                            @if (!string.IsNullOrEmpty(Model.Lecturer.Experience))
+                                {
+                                    <p class="text-muted mb-2">@Html.Raw(Model.Lecturer.Experience)</p>
+                                }
+
+                                @if (!string.IsNullOrEmpty(Model.Lecturer.Email))
+                                {
+                                    <p class="small mb-0">
+                                        📧  @Model.Lecturer.Email 
+                                    </p>
+                                }
+
+                                @if (!string.IsNullOrEmpty(Model.Lecturer.Phone))
+                                {
+                                    <p class="small mb-0">
+                                        📞 @Model.Lecturer.Phone
+                                    </p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Nội dung khóa học -->
+                <div class="course-content mt-5">
+                    <h4 class="fw-bold mb-3">📚 Nội dung khóa học</h4>
+
+                    @if (Model.Videos != null && Model.Videos.Any())
+                    {
+                        <div class="chapter border rounded mb-3">
+                            <div class="chapter-header p-3 bg-light d-flex justify-content-between align-items-center">
+                                <strong>Nội dung khóa học</strong>
+                                <span class="text-muted small">
+                                    @Model.Videos.Count() Bài học –
+                                    @TimeSpan.FromSeconds(Model.Videos.Sum(v => v.Duration ?? 0)).ToString(@"hh\:mm\:ss")
+                                </span>
+                            </div>
+
+                            <ul class="list-group list-group-flush">
+                                @{
+                                    int index = 0;
+                                }
+
+                                @foreach (var video in Model.Videos)
+                                {
+                                    bool allowPreview = (index == 0) || video.IsPreview;
+
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="fa fa-play-circle me-2 text-secondary"></i>
+                                            @video.Title
+
+                                        </div>
+
+                                        <div class="text-end">
+                                            @if (allowPreview)
+                                            {
+                                                <a asp-controller="Course" asp-action="CoursePreview" asp-route-id="@video.CourseVideoID"
+                                                   class="btn btn-sm btn-info text-white me-2">Xem thử</a>
+                                            }
+                                            else
+                                            {
+                                                <button class="btn btn-sm btn-secondary me-2" disabled>
+                                                    Khoá
+                                                </button>
+                                            }
+
+                                            <span class="text-muted small">
+                                                @video.DurationDisplay
+                                            </span>
+                                        </div>
+                                    </li>
+
+                                    index++;
+                                }
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted fst-italic">Chưa có nội dung video nào cho khóa học này.</p>
+                    }
+                </div>
+            </div>
+
+            <!-- Cột phải: Thông tin khóa học -->
+            <div class="col-lg-4 col-md-12">
+                <div class="course-info card shadow-sm border-0 p-4">
+                    <h4 class="fw-bold mb-3">Thông tin khóa học</h4>
+
+                    <p class="mb-2">
+                        <strong>Giảng viên: </strong>
+                        @(Model.Lecturer != null ? Model.Lecturer.LecturerName : "Chưa cập nhật")
+                    </p>
+
+                    <p class="mb-3"><strong>Thời lượng: </strong> @Model.TotalVideos videos </p>
+
+                    <div class="mb-3">
+                        @if (Model.Course.IsFree)
+                        {
+                            <p class="fw-bold text-success mb-0" style="font-size:18px;">Miễn phí</p>
+                        }
+                        else if (Model.Course.PriceSale != null && Model.Course.PriceSale > 0)
+                        {
+                            <p class="fw-bold text-primary mb-0" style="font-size:18px;">
+                                @String.Format("{0:N0}₫", Model.Course.PriceSale)
+                            </p>
+                            <p class="text-muted" style="text-decoration: line-through; font-size:14px;">
+                                @String.Format("{0:N0}₫", Model.Course.Price)
+                            </p>
+                        }
+                        else
+                        {
+                            <p class="fw-bold text-primary mb-0" style="font-size:18px;">
+                                @String.Format("{0:N0}₫", Model.Course.Price)
+                            </p>
+                        }
+                    </div>
+
+                    <div class="button-group">
+                        @if (TempData["Message"] != null)
+                        {
+                            <div class="alert alert-info text-center">@TempData["Message"]</div>
+                        }
+                        @if (Model.Course.IsFree)
+                        {
+                            <form asp-action="Register" method="post">
+                                <input type="hidden" name="courseId" value="@Model.Course.CourseID" />
+                                <button type="submit" class="btn btn-success btn-lg w-100 mb-2">
+                                    <i class="fa fa-graduation-cap me-2"></i> Đăng ký miễn phí
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="Register" method="post">
+                                <input type="hidden" name="courseId" value="@Model.Course.CourseID" />
+                                <button type="submit" class="btn btn-primary btn-lg w-100 mb-2">
+                                    <i class="fa fa-shopping-cart me-2"></i> Thanh toán & Đăng ký
+                                </button>
+                            </form>
+                        }
+                    </div>
+
+                    <hr class="my-4">
+
+                    <p class="text-muted small">
+                        🎓 Truy cập trọn đời – Học mọi lúc, mọi nơi.<br>
+                        💡 Có chứng nhận hoàn thành khóa học.<br>
+                        👩‍🏫 Hỗ trợ trực tuyến từ giảng viên.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Course Section End -->

@@ -1,0 +1,86 @@
+﻿@using KidShop.Utilities
+@model KidShop.Models.tbl_Lecturer
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<div class="content-body">
+    <div class="container-fluid">
+
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Sửa giảng viên</h4>
+            </div>
+            <div class="card-body">
+                <div class="form-validation">
+                    <form asp-action="Edit" method="post" class="form-valide" novalidate="novalidate">
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                        <input asp-for="LecturerID" type="hidden" />
+
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <label asp-for="LecturerName">Tên giảng viên</label>
+                                <input asp-for="LecturerName" class="form-control" placeholder="Nhập tên giảng viên" />
+                                <span asp-validation-for="LecturerName" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label asp-for="Phone">Số điện thoại</label>
+                                <input asp-for="Phone" class="form-control" placeholder="Nhập điện thoại giảng viên" />
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label asp-for="Email"> Email</label>
+                                <input asp-for="Email" class="form-control" placeholder="Nhập email giảng viên" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label asp-for="Experience">Kinh nghiệm giảng viên</label>
+                                <input asp-for="Experience" class="form-control" placeholder="Nhập kinh nghiệm giảng viên" />
+                                <span asp-validation-for="Experience" class="text-danger"></span>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="control-label">Hình ảnh</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <button class="btn btn-success" type="button" onclick="openDialogImage()">Choose a pic</button>
+                                </div>
+                                <input type="text" class="form-control" asp-for="Avatar" id="file_input1" aria-describedby="button-addon2">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-6 d-flex align-items-center">
+                                <label class="mb-0 mr-2">Hiển thị</label>
+                                @Html.CheckBox("IsActive", Model.IsActive, new { @class = "mr-2" })
+                                <span>Cho phép hiển thị</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-12 text-right">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-file-plus-fill"></i> Lưu
+                                </button>
+                                <a asp-controller="Lecturer" asp-action="Index" class="btn btn-warning ml-2">Quay lại</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section HeadContent {
+    @{
+        var summerNote = new KidShop.Areas.Admin.Models.SummerNote("#Experience");
+        <partial name="_SummerNote" model="summerNote" />
+    }
+}
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

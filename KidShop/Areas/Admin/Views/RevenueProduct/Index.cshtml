@@ -1,0 +1,119 @@
+﻿@using KidShop.ViewModel
+@using KidShop.ViewModel.Product
+@model RevenueProductVM
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content-body">
+    <div class="container-fluid">
+        <div class="pagetitle">
+            <h2>Dashboard Doanh thu & Kho</h2>
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h5>Tổng doanh thu</h5>
+                    <p class="h3">@Model.TotalRevenue.ToString("N0") VNĐ</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h5>Tổng lợi nhuận</h5>
+                    <p class="h3">@Model.TotalProfit.ToString("N0") VNĐ</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h5>Tổng số đơn hàng</h5>
+                    <p class="h3">@Model.TotalOrders</p>
+                </div>
+            </div>
+        </div>
+
+        <h5>Chi tiết hôm nay</h5>
+        <div class="row mb-4">
+            <div class="col-md-4"><div class="card p-3">Doanh thu: @Model.RevenueToday.ToString("N0") VNĐ</div></div>
+            <div class="col-md-4"><div class="card p-3">Chi phí: @Model.CostToday.ToString("N0") VNĐ</div></div>
+            <div class="col-md-4"><div class="card p-3">Lợi nhuận: @Model.ProfitToday.ToString("N0") VNĐ</div></div>
+        </div>
+
+        <h5>Chi tiết tháng này</h5>
+        <div class="row mb-4">
+            <div class="col-md-4"><div class="card p-3">Doanh thu: @Model.RevenueThisMonth.ToString("N0") VNĐ</div></div>
+            <div class="col-md-4"><div class="card p-3">Chi phí: @Model.CostThisMonth.ToString("N0") VNĐ</div></div>
+            <div class="col-md-4"><div class="card p-3">Lợi nhuận: @Model.ProfitThisMonth.ToString("N0") VNĐ</div></div>
+        </div>
+
+        <h5>Doanh thu theo sản phẩm</h5>
+        <table class="table table-bordered table-striped mb-4">
+            <thead>
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Doanh thu</th>
+                    <th>Chi phí</th>
+                    <th>Lợi nhuận</th>
+                    <th>Số lượng bán</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model.ProductRevenue)
+                {
+                    <tr>
+                        <td>@p.ProductName</td>
+                        <td>@p.Revenue.ToString("N0")</td>
+                        <td>@p.Cost.ToString("N0")</td>
+                        <td>@p.Profit.ToString("N0")</td>
+                        <td>@p.QuantitySold</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <h5>Doanh thu theo tháng</h5>
+        <table class="table table-bordered table-striped mb-4">
+            <thead>
+                <tr>
+                    <th>Tháng</th>
+                    <th>Doanh thu</th>
+                    <th>Chi phí</th>
+                    <th>Lợi nhuận</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var m in Model.MonthlyRevenue)
+                {
+                    <tr>
+                        <td>@m.Month/@m.Year</td>
+                        <td>@m.Revenue.ToString("N0")</td>
+                        <td>@m.Cost.ToString("N0")</td>
+                        <td>@m.Profit.ToString("N0")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <h5>Kho hàng</h5>
+        <table class="table table-bordered table-striped mb-4">
+            <thead>
+                <tr>
+                    <th>Tổng sản phẩm</th>
+                    <th>Tổng tồn kho</th>
+                    <th>Nhập kho tháng này</th>
+                    <th>Xuất kho tháng này</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@Model.TotalProducts</td>
+                    <td>@Model.TotalStock</td>
+                    <td>@Model.TotalImportThisMonth</td>
+                    <td>@Model.TotalExportThisMonth</td>
+                </tr>
+            </tbody>
+        </table>
+
+        
+     </div>
+</div>

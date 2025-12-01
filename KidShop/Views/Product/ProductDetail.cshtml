@@ -1,0 +1,371 @@
+﻿@using KidShop.Utilities
+@using KidShop.ViewModel.Product
+@model ProductDetailVM
+
+<!-- Breadcrumb Section Begin -->
+<section class="breadcrumb-section set-bg" data-setbg="/img/breadcrumb.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>@Model.Product.ProductName</h2>
+                    <div class="breadcrumb__option">
+                        <a asp-controller="Home" asp-action="Index">Trang chủ</a>
+                        <span>@Model.Product.ProductName</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Breadcrumb Section End -->
+
+<!-- Product Details Section Begin -->
+<section class="product-details spad">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-lg-6 col-md-6">
+                <div class="product__details__pic">
+                    <div class="product__details__pic__item">
+                        <img class="product__details__pic__item--large"
+                             src="@Model.Product.Image" alt="lỗi ảnh">
+                    </div>
+                    <div class="product__details__pic__slider owl-carousel">
+                         @foreach (var img in Model.Images)
+                        {
+                            <img data-imgbigurl="@img.ImageUrl"
+                                 src="@img.ImageUrl" alt="@img.AltText ?? " >
+                        }                     
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-6">
+                <div class="product__details__text">
+                    <h3>@Model.Product.ProductName</h3>
+                   
+                    <div class="product__details__rating">
+                        @if (string.IsNullOrEmpty(Model.Product.Brand))
+                        {
+                            <p class="mb-0 mr-2">Thương hiệu: Đang cập nhật</p>
+                        }
+                        else
+                        {
+                            <p class="mb-0 mr-2">Thương hiệu: @Model.Product.Brand</p>
+                        }
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star-half-o"></i>
+                      
+                    </div>
+
+                    <div class="product__details__price">
+                        @if (@Model.Product.PriceSale.HasValue && @Model.Product.PriceSale > 0)
+                        {
+                            <span style="color: red; font-weight: bold;">
+                                @Model.Product.PriceSale.Value.ToString("N0") đ
+                            </span>
+                            <span style="text-decoration: line-through; color: #888; margin-left: 5px;">
+                                @(@Model.Product.Price.HasValue? @Model.Product.Price.Value.ToString("N0") + " đ" : "")
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="price">
+                                @(@Model.Product.Price.HasValue? @Model.Product.Price.Value.ToString("N0") + " đ" : "Liên hệ")
+                            </span>
+                        }
+                     </div>
+
+                    <p>
+                        Mô tả:
+                        @Model.Product.Description
+                    </p>
+
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
+                            @TempData["ErrorMessage"]
+                            <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
+                            @TempData["SuccessMessage"]
+                            <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <!-- them gio hang-->
+                    @if (Model.Product.Quantity > 0)
+                    {
+                        <form asp-action="AddToCart" asp-controller="Cart" method="post">
+                            <input type="hidden" name="productId" value="@Model.Product.ProductID" />
+                            <div class="product__details__quantity">
+                                <div class="quantity">
+                                    <div class="pro-qty">
+                                        <input type="number" name="quantity" value="1" min="1">
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="primary-btn">Thêm vào giỏ hàng</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span class="text-danger" style="font-size: 18px; font-weight: bold;">Hết hàng</span>
+                    }
+                    <div id="cart-message" class="mt-2"></div>
+                    <!-- Them yeu thich-->
+                    <form asp-controller="Favorites" asp-action="Add" method="post" class="d-inline">
+                        <input type="hidden" name="productId" value="@Model.Product.ProductID" />
+                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                            <i class="fa fa-heart"></i> Thêm vào yêu thích
+                        </button>
+                    </form>
+                    
+
+                    <ul>
+                        <li>
+                            <b>Tình trạng</b>
+                            <span> @(Model.Product.Quantity > 0 ? $"Còn hàng ({Model.Product.Quantity} sản phẩm)" : "Hết hàng")
+                            </span>
+                        </li>
+                        <li><b>Giao hàng</b> <span>3-4 ngày tỉnh lẻ. <samp>Miễn phí ship trong 30 km</samp></span></li>
+                        <li><b>Tag</b> <span>@Model.Product.Tags </span></li>
+                        <li>
+                            <b>Chia sẻ</b>
+                            <div class="share">
+                                <a href="#"><i class="fa fa-facebook"></i></a>
+                                <a href="#"><i class="fa fa-twitter"></i></a>
+                                <a href="#"><i class="fa fa-instagram"></i></a>
+                                <a href="#"><i class="fa fa-pinterest"></i></a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="product__details__tab">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#tabs-1" role="tab"
+                               aria-selected="true">Chi tiết sản phẩm</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#tabs-2" role="tab"
+                               aria-selected="false">Thẻ Tag</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#tabs-3" role="tab"
+                               aria-selected="false">Đánh giá</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tabs-1" role="tabpanel">
+                            <div class="product__details__tab__desc">
+                                
+                                @Html.Raw(@Model.Product.Detail)
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="tabs-2" role="tabpanel">
+                            <div class="product__details__tab__desc">
+                                
+                                <p>
+                                    @Model.Product.Tags
+                                </p>
+                                
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="tabs-3" role="tabpanel">
+                            <div class="product__details__tab__desc">
+                                 
+                                <!-- Comment Section Begin -->
+                                <div class="product__details__comments mt-5">
+                                    <h4>Bình luận</h4>
+                                    <br/>
+                                    @* Danh sách bình luận *@
+                                    @if (Model.Comments.Any())
+                                    {
+                                        <div class="product__details__comments__list">
+                                            @foreach (var cmt in Model.Comments)
+                                            {
+                                                <div class="product__details__comment d-flex mb-3">
+                                                    <div class="product__details__comment__author-pic mr-3">
+                                                        <img src="/img/avatar_default.jpg"
+                                                             alt="@cmt.FullName"
+                                                             style="width:60px; height:60px; border-radius:50%; object-fit:cover;">
+                                                    </div>
+
+                                                    <div class="product__details__comment__text">
+                                                        <h6 class="mb-1">
+                                                            @cmt.FullName
+                                                            <span style="color: #999; font-size: 13px;">
+                                                                • @cmt.CreatedDate?.ToString("dd/MM/yyyy")
+                                                            </span>
+                                                        </h6>
+                                                        <p>@cmt.Contents</p>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p>Chưa có bình luận nào.</p>
+                                    }
+
+                                    <br />
+
+                                    <!-- Comment Form -->
+                                    <div class="product__details__comment__form mt-4">
+                                        <h5>Viết bình luận</h5>
+
+                                        @* Thông báo lỗi / thành công *@
+                                        @if (TempData["CommentError"] != null)
+                                        {
+                                            <div class="alert alert-warning">@TempData["CommentError"]</div>
+                                        }
+                                        else if (TempData["CommentSuccess"] != null)
+                                        {
+                                            <div class="alert alert-success">@TempData["CommentSuccess"]</div>
+                                        }
+
+                                        <form asp-controller="Product" asp-action="AddComment" method="post">
+                                            <input type="hidden" name="productId" value="@Model.Product.ProductID" />
+                                            <textarea name="contents" rows="4" placeholder="Nội dung bình luận..." class="form-control mb-3" required></textarea>
+                                            <button type="submit" class="btn btn-primary">Gửi bình luận</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <!-- Comment Section End -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Product Details Section End -->
+
+<!-- Related Product Section Begin -->
+<section class="related-product">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-title related__product__title">
+                    <h2>Sản phẩm liên quan</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            @foreach (var item in ViewBag.RelatedProducts ?? new List<KidShop.Models.tbl_Product>())
+             {
+                string url = Functions.TitleSlugGeneration("sanpham", item.ProductName ?? "no-title", @item.ProductID);
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="product__item">
+                        <div class="product__item__pic set-bg" data-setbg="@item.Image">
+                            <ul class="product__item__pic__hover">
+                                <li>
+                                    <form asp-controller="Favorites" asp-action="Add" method="post" class="d-inline">
+                                        <input type="hidden" name="productId" value="@item.ProductID" />
+                                        <button type="submit" class="btn btn-link p-0 text-danger">
+                                            <i class="fa fa-heart"></i>
+                                        </button>
+                                    </form>
+                                </li>
+
+                                <li><a href="#"><i class="fa fa-retweet"></i></a></li>
+
+                                <!--Them sp vao gio hang-->
+                                <li>
+                                    <form asp-controller="Cart" asp-action="AddToCart" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="productId" value="@item.ProductID" />
+                                        <input type="hidden" name="quantity" value="1" />
+                                        <button type="submit" class="btn btn-link p-0 text-success" title="Thêm vào giỏ hàng">
+                                            <i class="fa fa-shopping-cart"></i>
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="product__item__text">
+                            <h6><a href="/@url">@item.ProductName</a></h6>
+                            @if ((item.PriceSale ?? 0) > 0)
+                            {
+                                <span style="color: red; font-weight: bold;">
+                                    @item.PriceSale?.ToString("N0") đ
+                                </span>
+
+                                @if ((item.Price ?? 0) > 0)
+                                {
+                                    <span style="text-decoration: line-through; color: #888; margin-left: 5px;">
+                                        @item.Price?.ToString("N0") đ
+                                    </span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="price">
+                                    @(item.Price?.ToString("N0") ?? "Liên hệ") đ
+                                </span>
+                            }
+                        </div>
+                     </div>
+                </div>
+            }
+           
+        </div>
+    </div>
+</section>
+<!-- Related Product Section End -->
+@section Scripts {
+ 
+    <script>
+        $(document).ready(function(){
+
+            $('.add-to-cart-form').submit(function(e){
+                e.preventDefault(); // ngăn reload page
+
+                var form = $(this);
+                var url = form.attr('action');
+                var token = form.find('input[name="__RequestVerificationToken"]').val();
+                var productId = form.find('input[name="productId"]').val();
+                var quantity = form.find('input[name="quantity"]').val();
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        __RequestVerificationToken: token,
+                        productId: productId,
+                        quantity: quantity
+                    },
+                    success: function(response){
+                        var msgDiv = $('#cart-message');
+                        if(response.success){
+                            msgDiv.html('<div class="alert alert-success">' + response.message + '</div>');
+                            // Cập nhật số lượng giỏ hàng nếu bạn có badge:
+                            $('#cart-count').text(response.cartCount);
+                        } else {
+                            msgDiv.html('<div class="alert alert-danger">' + response.message + '</div>');
+                        }
+                    },
+                    error: function(){
+                        $('#cart-message').html('<div class="alert alert-danger">Có lỗi xảy ra. Vui lòng thử lại.</div>');
+                    }
+                });
+            });
+
+        });
+    </script>
+}

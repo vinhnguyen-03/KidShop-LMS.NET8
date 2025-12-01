@@ -1,0 +1,85 @@
+﻿@model IEnumerable<KidShop.Models.tbl_Order>
+
+<div class="content-body">
+    <div class="container-fluid">
+        <div class="pagetitle">
+            <h2>Quản lý đơn hàng sản phẩm</h2>
+        </div>
+
+        <div class="col-lg-12">
+            <div class="card">
+
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-responsive-md">
+                            <thead>
+                                <tr>
+                                    <th style="width:50px;">
+                                        <div class="custom-control custom-checkbox checkbox-success check-lg mr-3">
+                                            <input type="checkbox" class="custom-control-input" id="checkAll">
+                                            <label class="custom-control-label" for="checkAll"></label>
+                                        </div>
+                                    </th>
+                                    <th>STT</th>
+                                    <th>Mã đơn hàng</th>
+                                    <th>Người nhận</th>
+                                    <th>Ngày đặt</th>
+                                    <th>Tổng tiền</th>
+                                    <th>Trạng thái</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var count = 1;
+                                }
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="custom-control custom-checkbox checkbox-success check-lg mr-3">
+                                                <input type="checkbox" class="custom-control-input" id="orderCheck_@item.OrderID">
+                                                <label class="custom-control-label" for="orderCheck_@item.OrderID"></label>
+                                            </div>
+                                        </td>
+                                        <td><strong>@count</strong></td>
+                                        <td>#@item.OrderID</td>
+                                        <td>@item.ReceiverName</td>
+                                        <td>@item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>@item.TotalAmount.ToString("N0") ₫</td>
+                                        <td>
+                                            <span class="badge
+                                                   @(item.Status == "Đang vận chuyển" ? "bg-info text-dark"
+                                                      : item.Status == "Đã thanh toán" ? "bg-success"
+                                                      : item.Status == "Chờ xử lý" ? "bg-warning" 
+                                                      : item.Status == "Huỷ" ? "bg-danger" : "bg-info text-dark")">
+                                            @item.Status
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <a asp-area="Admin" asp-controller="Order" asp-action="Details"
+                                               asp-route-id="@item.OrderID"
+                                               class="btn btn-primary shadow btn-xs sharp mr-1">
+                                                <i class="fa fa-eye"></i>
+                                            </a>
+                                           
+                                            <a asp-area="Admin" asp-controller="Order" asp-action="Delete"
+                                               asp-route-id="@item.OrderID"
+                                               class="btn btn-danger shadow btn-xs sharp">
+                                                <i class="fa fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                 count++;
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

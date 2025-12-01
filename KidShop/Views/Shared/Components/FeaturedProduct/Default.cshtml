@@ -1,0 +1,75 @@
+﻿@model IEnumerable<KidShop.Models.tbl_Product>
+@using KidShop.Models;
+@using KidShop.Utilities;
+<!-- Featured Section Begin -->
+<section class="featured spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-title">
+                    <h2>Sản phẩm nổi bật</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="row featured__filter">
+            @foreach (var item in Model)
+            {
+                string url = Functions.TitleSlugGeneration("sanpham", item.ProductName ?? "no-title", @item.ProductID);
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="featured__item">
+                        <div class="featured__item__pic set-bg" data-setbg="@item.Image">
+                            <ul class="featured__item__pic__hover">
+                                <!--Them sp yeu thich-->
+                                <li>
+                                    <form asp-controller="Favorites" asp-action="Add" method="post" class="d-inline">
+                                        <input type="hidden" name="productId" value="@item.ProductID" />
+                                        <button type="submit" class="btn btn-link p-0 text-danger">
+                                            <i class="fa fa-heart"></i>
+                                        </button>
+                                    </form>
+                                </li>
+                                <li><a href="#"><i class="fa fa-retweet"></i></a></li>
+                                <!--Them sp vao gio hang-->
+                                <li>
+                                    <form asp-controller="Cart" asp-action="AddToCart" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="productId" value="@item.ProductID" />
+                                        <input type="hidden" name="quantity" value="1" />
+                                        <button type="submit" class="btn btn-link p-0 text-success" title="Thêm vào giỏ hàng">
+                                            <i class="fa fa-shopping-cart"></i>
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="featured__item__text">
+                            <h5><a href="/@url">@item.ProductName</a></h5>
+
+                            @if (item.PriceSale.HasValue && item.PriceSale > 0)
+                            {
+                                <span style="color: red; font-weight: bold;">
+                                    @item.PriceSale?.ToString("N0") đ
+                                </span>
+                                @if (item.Price.HasValue)
+                                {
+                                    <span style="text-decoration: line-through; color: #888; margin-left: 5px;">
+                                        @item.Price?.ToString("N0") đ
+                                    </span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="price">
+                                    @(item.Price?.ToString("N0") ?? "Liên hệ") đ
+                                </span>
+                            }
+                           
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+<!-- Featured Section End -->

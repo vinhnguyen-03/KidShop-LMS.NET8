@@ -1,0 +1,114 @@
+﻿@model KidShop.Models.tbl_Order;
+
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng";
+}
+<!-- Breadcrumb Section Begin -->
+<section class="breadcrumb-section set-bg" data-setbg="/img/breadcrumb.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>Chi tiết đơn hàng #@Model.OrderID</h2>
+                    <div class="breadcrumb__option">
+                        <a asp-controller="Home" asp-action="Index">Trang chủ</a>
+                        <span>Chi tiết đơn hàng</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Breadcrumb Section End -->
+<!-- Order Detail Section Begin -->
+<section class="shoping-cart spad">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-md-12">
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body">
+                        <h4 class="mb-3">Thông tin đơn hàng</h4>
+                        <p><strong>Ngày đặt:</strong> @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</p>
+                        <p><strong>Người nhận:</strong> @Model.ReceiverName</p>
+                        <p><strong>Điện thoại:</strong> @Model.PhoneNumber</p>
+                        <p><strong>Địa chỉ:</strong> @Model.ShippingAddress</p>
+                        <p><strong>Email:</strong> @Model.Email</p>
+                        <p><strong>Ghi chú:</strong> @Model.Note</p>
+                        <p><strong>Phương thức thanh toán:</strong> @Model.PaymentMethod</p>
+                        <p>
+                            <strong>Trạng thái:</strong>
+                            <span class="badge bg-info text-dark">
+                                @switch (Model.Status)
+                                {
+                                    case "Pending":
+                                        <span class="badge bg-warning text-dark">Chờ xử lý</span>
+                                        ;
+                                        break;
+                                    case "Paid":
+                                        <span class="badge bg-success">Đã thanh toán</span>
+                                        ;
+                                        break;
+                                    case "Shipping":
+                                        <span class="badge bg-info text-dark">Đang giao</span>
+                                        ;
+                                        break;
+                                    case "Canceled":
+                                        <span class="badge bg-danger">Đã hủy</span>
+                                        ;
+                                        break;
+                                    default:
+                                        <span class="badge bg-secondary">@Model.Status</span>
+                                        ;
+                                        break;
+                                }
+                            </span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h4 class="mb-3">Sản phẩm trong đơn</h4>
+                        <div class="table-responsive">
+                            <table class="table table-bordered align-middle">
+                                <thead class="table-light">
+                                    <tr class="text-center">
+                                        <th width="40%">Sản phẩm</th>
+                                        <th width="20%">Giá</th>
+                                        <th width="20%">Số lượng</th>
+                                        <th width="20%">Thành tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Items)
+                                    {
+                                        <tr>
+                                            <td>@item.Product?.ProductName</td>
+                                            <td class="text-end">@item.UnitPrice.ToString("N0") ₫</td>
+                                            <td class="text-center">@item.Quantity</td>
+                                            <td class="text-end">@((item.UnitPrice * item.Quantity).ToString("N0")) ₫</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="text-end mt-3">
+                            <h5>
+                                Tổng cộng:
+                                <strong class="text-danger">@Model.TotalAmount.ToString("N0") ₫</strong>
+                            </h5>
+                        </div>
+
+                        <div class="mt-4">
+                            <a asp-action="HistoryOrder" class="btn btn-secondary">
+                                ← Quay lại lịch sử
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Order Detail Section End -->

@@ -1,0 +1,43 @@
+﻿@using KidShop.Models;
+@model IList<tbl_Blog>
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<div class="content-body">
+    <div class="container-fluid">
+        <div class="pagetitle">
+            <h2>Bài viết chờ duyệt</h2>
+        </div>
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["Success"]
+            </div>
+        }
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Tiêu đề</th>
+                    <th>Người đăng</th>
+                    <th>Ngày tạo</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var b in Model)
+                {
+                    <tr>
+                        <td>@b.Title</td>
+                        <td>@b.User.FullName</td>
+                        <td>@b.CreatedDate?.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <a asp-action="Approve" asp-route-id="@b.BlogID" class="btn btn-success btn-sm">Duyệt</a>
+                            <a asp-action="Reject" asp-route-id="@b.BlogID" class="btn btn-danger btn-sm">Từ chối</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

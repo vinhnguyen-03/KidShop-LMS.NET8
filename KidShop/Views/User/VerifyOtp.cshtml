@@ -1,0 +1,22 @@
+﻿@using KidShop.ViewModel.User
+@model VerifyOtpVM
+<section class="blog-details spad">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-8">
+                <div class="card p-4 shadow-sm border-0">
+                    <h3 class="text-center mb-3">Nhập mã xác nhận</h3>
+                    <form method="post" asp-controller="User" asp-action="VerifyOtp">
+                        <input type="hidden" asp-for="Email" value="@TempData["Email"]" />
+                        <div class="form-group mb-3">
+                            <label>Mã OTP</label>
+                            <input asp-for="OtpCode" class="form-control" placeholder="Nhập mã 6 số" required />
+                            <span asp-validation-for="OtpCode" class="text-danger"></span>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Xác nhận</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

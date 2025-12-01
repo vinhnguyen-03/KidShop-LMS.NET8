@@ -1,0 +1,67 @@
+﻿@using KidShop.ViewModel
+@using KidShop.ViewModel.Blog
+@model IEnumerable<SavedBlogStatisticVM>
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content-body">
+    <div class="container-fluid">
+        <div class="pagetitle">
+            <h2>Thống Kê Lưu Bài Viết</h2>
+        </div>
+
+        <!-- Form tìm kiếm -->
+        <form method="get" class="mb-3">
+            <div class="input-group">
+                <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Tìm kiếm bài viết..." />
+                <button class="btn btn-primary" type="submit">Tìm</button>
+            </div>
+        </form>
+
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-responsive-md">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Tiêu đề bài viết</th>
+                                    <th>Số lần lưu</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int count = (ViewBag.CurrentPage - 1) * 10 + 1;
+                                }
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@count</td>
+                                        <td>@item.BlogTitle</td>
+                                        <td>@item.SavedCount</td>
+                                    </tr>
+                                    count++;
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Phân trang -->
+                    <nav>
+                        <ul class="pagination justify-content-center mt-3">
+                            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                    <a class="page-link" href="?search=@ViewBag.Search&page=@i">@i</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

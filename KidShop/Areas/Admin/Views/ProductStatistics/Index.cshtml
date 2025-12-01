@@ -1,0 +1,187 @@
+﻿@using KidShop.ViewModel.Product
+@model ProductStatisticsVM
+
+@{
+    ViewData["Title"] = "Thống kê sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content-body">
+    <div class="container-fluid">
+
+        <h3 class="mb-4">📊 Thống kê sản phẩm</h3>
+
+        <!-- THỐNG KÊ TỔNG QUAN -->
+        <div class="row mb-4">
+
+            <div class="col-md-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h4>@Model.TotalProducts</h4>
+                        <p>Tổng số sản phẩm</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card bg-danger text-white">
+                    <div class="card-body text-center">
+                        <h4>@Model.OutOfStock</h4>
+                        <p>Hết hàng</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card bg-warning text-dark">
+                    <div class="card-body text-center">
+                        <h4>@Model.LowStock</h4>
+                        <p>Sắp hết hàng (&lt;5)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DANH SÁCH HẾT HÀNG -->
+        <div class="card mb-4">
+            <div class="card-header bg-danger text-white">
+                <h5>⚠️ Sản phẩm đã hết hàng</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.OutOfStockProducts != null && Model.OutOfStockProducts.Any())
+                {
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Sản phẩm</th>
+                                <th>Tồn kho</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.OutOfStockProducts.Count; i++)
+                            {
+                                <tr class="table-danger">
+                                    <td>@(i + 1)</td>
+                                    <td>@Model.OutOfStockProducts[i].ProductName</td>
+                                    <td>@Model.OutOfStockProducts[i].Quantity.GetValueOrDefault()</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted">Không có sản phẩm hết hàng.</p>
+                }
+            </div>
+        </div>
+
+        <!-- DANH SÁCH SẮP HẾT HÀNG -->
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h5>⚠️ Sản phẩm sắp hết hàng (&lt;5)</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.LowStockProducts != null && Model.LowStockProducts.Any())
+                {
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Sản phẩm</th>
+                                <th>Tồn kho</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.LowStockProducts.Count; i++)
+                            {
+                                <tr class="table-warning">
+                                    <td>@(i + 1)</td>
+                                    <td>@Model.LowStockProducts[i].ProductName</td>
+                                    <td>@Model.LowStockProducts[i].Quantity</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted">Không có sản phẩm sắp hết hàng.</p>
+                }
+            </div>
+        </div>
+
+        <!-- TOP 5 SẢN PHẨM BÁN CHẠY -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5>🔥 Top 5 sản phẩm bán chạy trong 1 tháng</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Top5Products != null && Model.Top5Products.Any())
+                {
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Sản phẩm</th>
+                                <th>Đã bán</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.Top5Products.Count; i++)
+                            {
+                                <tr>
+                                    <td>@(i + 1)</td>
+                                    <td>@Model.Top5Products[i].ProductName</td>
+                                    <td>@Model.Top5Products[i].TotalSold</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted">Không có dữ liệu bán hàng.</p>
+                }
+            </div>
+        </div>
+
+
+        <!-- SẢN PHẨM BÁN CHẬM TRONG 3 THÁNG -->
+        <div class="card mb-4">
+            <div class="card-header bg-warning">
+                <h5>🐢 Sản phẩm bán chậm trong 3 tháng</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.SlowProducts != null && Model.SlowProducts.Any())
+                {
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Sản phẩm</th>
+                                <th>Tồn kho</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.SlowProducts.Count; i++)
+                            {
+                                <tr>
+                                    <td>@(i + 1)</td>
+                                    <td>@Model.SlowProducts[i].ProductName</td>
+                                    <td>@Model.SlowProducts[i].Stock</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted">Không có sản phẩm bán chậm.</p>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>

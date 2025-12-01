@@ -1,0 +1,209 @@
+﻿@model IEnumerable<KidShop.Models.tbl_Product>
+@using KidShop.Models;
+@using KidShop.Utilities;
+
+<!-- Breadcrumb Section Begin -->
+<section class="breadcrumb-section set-bg" data-setbg="/img/breadcrumb.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>Cửa hàng đồ chơi</h2>
+                    <div class="breadcrumb__option">
+                        <a asp-controller="Home" asp-action="Index">Trang chủ</a>
+                        <span>Cửa hàng</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Breadcrumb Section End -->
+
+<!-- Product Section Begin -->
+<section class="product spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-5">
+                <div class="sidebar">
+                    <!-- Search -->
+                    <div class="blog__sidebar__search">
+                        <form asp-action="Index" asp-controller="Product" method="get">
+                            <input type="text" name="keyword" placeholder="Tìm kiếm..." value="@ViewBag.Keyword">
+                            <button type="submit"><span class="icon_search"></span></button>
+                        </form>
+                    </div>
+
+                    <div class="sidebar__item">
+                        <h4>Phân loại</h4>
+                        <ul>
+                            @foreach (var cat in ViewBag.Categories)
+                            {
+                                <li>
+                                    <a href="@Url.Action("Index", new { categoryId = cat.Category_ProductID })"
+                                       class="@(ViewBag.SelectedCategory == cat.Category_ProductID ? "active" : "")">
+                                        @cat.CategoryName
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+
+                     <div class="sidebar__item">
+                        <h4>Thương Hiệu</h4>
+                         <ul>
+                            @foreach (var item in ViewBag.Brands as List<string>)
+                            {
+                                <li>
+                                    <a href="@Url.Action("Index", new { brand = item, categoryId = ViewBag.SelectedCategory, keyword = ViewBag.Keyword, minPrice = ViewBag.MinPrice, maxPrice = ViewBag.MaxPrice })"
+                                       class="@(ViewBag.SelectedBrand == item ? "active" : "")">
+                                        @item
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+
+                    <div class="sidebar__item">
+                        <h4>Giá tiền</h4>
+                        <form method="get" action="@Url.Action("Index")">
+                            <input type="hidden" name="categoryId" value="@ViewBag.SelectedCategory" />
+
+                            <input type="number" name="minPrice" class="form-control mb-2" placeholder="Min" value="@ViewBag.MinPrice" />
+                            <input type="number" name="maxPrice" class="form-control mb-2" placeholder="Max" value="@ViewBag.MaxPrice" />
+
+                            <button type="submit" class="btn btn-primary btn-sm">Áp dụng</button>
+                        </form>
+                    </div>
+   
+                </div>
+            </div>
+
+            <div class="col-lg-9 col-md-7">
+                <div class="filter__item">
+                    <div class="row">
+                        <form method="get" asp-action="Index">
+
+                            <!-- Giữ lại các filter khác để không bị mất -->
+                            <input type="hidden" name="categoryId" value="@ViewBag.SelectedCategory" />
+                            <input type="hidden" name="minPrice" value="@ViewBag.MinPrice" />
+                            <input type="hidden" name="maxPrice" value="@ViewBag.MaxPrice" />
+
+                            <div class="col-lg-4 col-md-5">
+                                <div class="filter__sort">
+                                    <span class="me-2">SortBy</span>
+                                    <select name="sortBy" class="form-select" onchange="this.form.submit()">
+                                        <option value="default" selected="@(ViewBag.SortBy == "default" ? "selected" : null)">
+                                            Mới nhất
+                                        </option>
+                                        <option value="oldest" selected="@(ViewBag.SortBy == "oldest" ? "selected" : null)">
+                                            Cũ nhất
+                                        </option>
+                                        <option value="price_asc" selected="@(ViewBag.SortBy == "price_asc" ? "selected" : null)">
+                                            Giá tăng dần
+                                        </option>
+                                        <option value="price_desc" selected="@(ViewBag.SortBy == "price_desc" ? "selected" : null)">
+                                            Giá giảm dần
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div class="col-lg-5 col-md-4">
+                            <div class="filter__found">
+                                <h6><span>@ViewBag.TotalProducts</span> Sản phẩm tìm thấy</h6>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <div class="row">
+                    @if (Model != null && Model.Any())
+                   {
+                        @foreach (var product in Model)
+                        {
+                             string url = Functions.TitleSlugGeneration("sanpham", product.ProductName ?? "no-title", product.ProductID);
+                            <div class="col-lg-4 col-md-6 col-sm-6">
+                                <div class="product__item">
+                                    <div class="product__item__pic set-bg" data-setbg="@product.Image">
+
+                                        <ul class="product__item__pic__hover">
+                                            
+                                            <!--Them sp yeu thich-->
+                                            <li>
+                                                <form asp-controller="Favorites" asp-action="Add" method="post" class="d-inline">
+                                                    <input type="hidden" name="productId" value="@product.ProductID" />
+                                                    <button type="submit" class="btn btn-link p-0 text-danger">
+                                                        <i class="fa fa-heart"></i>
+                                                    </button>
+                                                </form>
+                                            </li>
+
+                                            <!--Them sp vao gio hang-->
+                                            <li>
+                                                <form asp-controller="Cart" asp-action="AddToCart" method="post" class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="productId" value="@product.ProductID" />
+                                                    <input type="hidden" name="quantity" value="1" />
+                                                    <button type="submit" class="btn btn-link p-0 text-success" title="Thêm vào giỏ hàng">
+                                                        <i class="fa fa-shopping-cart"></i>
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
+
+                                    </div>
+                                    <div class="product__item__text">
+                                            <h6><a href="/@url" >@product.ProductName</a></h6>
+
+                                        @if (product.PriceSale.HasValue && product.PriceSale > 0)
+                                        {
+                                            <span style="color: red; font-weight: bold;">
+                                                @product.PriceSale.Value.ToString("N0") đ
+                                            </span>
+                                            <span style="text-decoration: line-through; color: #888; margin-left: 5px;">
+                                                @(product.Price.HasValue? product.Price.Value.ToString("N0") + " đ" : "")
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="price">
+                                                @(product.Price.HasValue? product.Price.Value.ToString("N0") + " đ" : "Liên hệ")
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col-12 text-center">
+                            <p style="font-size:18px; color:#888; margin-top:20px;">❌ Không tìm thấy sản phẩm phù hợp</p>
+                        </div>
+                    }
+                </div>
+
+                <div class="product__pagination">
+                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        <a class="@(i == ViewBag.CurrentPage ? "active" : "")"
+                           href="@Url.Action("Index", new { 
+                               page = i, 
+                               categoryId = ViewBag.SelectedCategory, 
+                               minPrice = ViewBag.MinPrice, 
+                               maxPrice = ViewBag.MaxPrice,
+                               sortBy = ViewBag.SortBy,
+                               keyword = ViewBag.Keyword
+                           })">@i</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Product Section End -->
+
+ 

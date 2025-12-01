@@ -1,0 +1,49 @@
+﻿@model  KidShop.Models.tbl_Order
+<div class="content-body">
+    <div class="container-fluid">
+        <h2>Chi tiết đơn hàng #@Model.OrderID</h2>
+
+        <p><strong>Người nhận:</strong> @Model.ReceiverName</p>
+        <p><strong>Điện thoại:</strong> @Model.PhoneNumber</p>
+        <p><strong>Địa chỉ:</strong> @Model.ShippingAddress</p>
+        <p><strong>Trạng thái hiện tại:</strong> <span class="badge bg-info">@Model.Status</span></p>
+
+        <form asp-action="UpdateStatus" method="post" class="mb-3">
+            <input type="hidden" name="id" value="@Model.OrderID" />
+            <div class="input-group w-50">
+                <select name="status" class="form-select">
+                    <option>Chờ xử lý</option>
+                    <option>Đã xác nhận</option>
+                    <option>Đang vận chuyển</option>
+                    <option>Đã thanh toán</option>
+                    <option>Huỷ</option>
+                </select>
+                <button type="submit" class="btn btn-success">Cập nhật</button>
+            </div>
+        </form>
+
+        <table class="table table-bordered mt-4">
+            <thead class="table-light">
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Giá</th>
+                    <th>Số lượng</th>
+                    <th>Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td>@item.Product?.ProductName</td>
+                        <td>@item.UnitPrice.ToString("N0") ₫</td>
+                        <td>@item.Quantity</td>
+                        <td>@(item.UnitPrice * item.Quantity)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <h5 class="text-end mt-3">Tổng cộng: <strong>@Model.TotalAmount.ToString("N0") ₫</strong></h5>
+     </div>
+</div>

@@ -1,0 +1,63 @@
+﻿
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content-body">
+    <div class="container-fluid">
+
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Xuất kho</h4>
+            </div>
+
+            <div class="card-body">
+                <div class="form-validation">
+
+                    <form asp-action="ExportStock" method="post" class="form-valide" novalidate="novalidate">
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                        <div class="form-group row">
+
+                            <!-- Sản phẩm -->
+                            <div class="col-md-12 mb-3">
+                                <label>Sản phẩm</label>
+                                <select name="productId" class="form-control">
+                                    @foreach (var p in ViewBag.Products)
+                                    {
+                                        <option value="@p.ProductID">@p.ProductName</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <!-- Số lượng -->
+                            <div class="col-md-12 mb-3">
+                                <label>Số lượng xuất</label>
+                                <input type="number" name="quantity" class="form-control" placeholder="Nhập số lượng cần xuất" required />
+                            </div>
+
+                            <!-- Lý do -->
+                            <div class="col-md-12 mb-3">
+                                <label>Lý do</label>
+                                <input type="text" name="reason" class="form-control" placeholder="Ví dụ: Xuất bán lẻ, xuất cho đại lý" />
+                            </div>
+
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-12 text-right">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="bi bi-box-arrow-up"></i> Xuất kho
+                                </button>
+
+                                <a asp-action="History" class="btn btn-warning ml-2">Xem lịch sử</a>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

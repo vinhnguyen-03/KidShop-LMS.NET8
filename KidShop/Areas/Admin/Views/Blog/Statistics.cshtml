@@ -1,0 +1,36 @@
+﻿@using KidShop.ViewModel
+@using KidShop.ViewModel.Blog
+@model BlogStatsVM
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<div class="content-body">
+    <div class="container-fluid">
+        <div class="pagetitle">
+            <h2>Thống Kê Bài Viết</h2>
+        </div>
+        <div class="card p-3 mb-3">
+            <h4>Tổng số bài viết: @Model.TotalBlogs</h4>
+        </div>
+
+        <div class="card p-3 mb-3">
+            <h4>Bài viết có lượt xem nhiều nhất</h4>
+            @if (Model.MostViewedBlog != null)
+            {
+                <p><strong>Tiêu đề:</strong> @Model.MostViewedBlog.Title</p>
+                <p><strong>Lượt xem:</strong> @Model.MostViewedBlog.ViewCount</p>
+                <p><strong>Ngày tạo:</strong> @Model.MostViewedBlog.CreatedDate</p>
+            }
+            else
+            {
+                <p>Không có dữ liệu.</p>
+            }
+        </div>
+
+        <div class="card p-3 mb-3">
+            <h4>Người dùng đăng nhiều bài nhất</h4>
+            <p><strong>Tên:</strong> @Model.TopUserName</p>
+            <p><strong>Số bài viết:</strong> @Model.TopUserBlogCount</p>
+        </div>
+    </div>
+</div>

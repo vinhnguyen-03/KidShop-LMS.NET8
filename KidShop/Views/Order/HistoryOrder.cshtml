@@ -1,0 +1,92 @@
+﻿@model IEnumerable<tbl_Order>
+@{
+    ViewData["Title"] = "Lịch sử đơn hàng";
+}
+<!-- Breadcrumb Section Begin -->
+<section class="breadcrumb-section set-bg" data-setbg="/img/breadcrumb.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>Lịch sử đơn hàng</h2>
+                    <div class="breadcrumb__option">
+                        <a asp-controller="Home" asp-action="Index">Trang chủ</a>
+                        <span>Lịch sử đơn hàng</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Breadcrumb Section End -->
+
+<!-- HistoryOrder Section Begin -->
+<section class="shoping-cart spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                @if (!Model.Any())
+                {
+                    <div class="alert alert-info">Bạn chưa có đơn hàng nào.</div>
+                }
+                else
+                {
+                    <table class="table table-striped align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Ngày đặt</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                                <th>Thanh toán</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model)
+                            {
+                                <tr>
+                                    <td>@order.OrderID</td>
+                                    <td>@order.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>@order.TotalAmount.ToString("N0") ₫</td>
+                                    <td>
+                                        @switch (order.Status)
+                                        {
+                                            case "Chờ xử lý":
+                                                <span class="badge bg-warning text-dark">Chờ xử lý</span>
+                                                ;
+                                                break;
+                                            case "Đã thanh toán":
+                                                <span class="badge bg-success">Đã thanh toán</span>
+                                                ;
+                                                break;
+                                            case "Đang vận chuyển":
+                                                <span class="badge bg-info text-dark">Đang vận chuyển</span>
+                                                ;
+                                                break;
+
+                                            case "Huỷ":
+                                                <span class="badge bg-danger">Đã hủy</span>
+                                                ;
+                                                break;
+                                            default:
+                                                <span class="badge bg-secondary">@order.Status</span>
+                                                ;
+                                                break;
+                                        }
+                                    </td>
+                                    <td>@order.PaymentMethod</td>
+                                    <td>
+                                        <a asp-action="DetailOrder" asp-route-id="@order.OrderID" class="btn btn-sm btn-outline-primary">
+                                            Xem chi tiết
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                </div>
+            </div>
+        </div>
+</section>

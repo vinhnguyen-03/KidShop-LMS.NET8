@@ -1,0 +1,99 @@
+﻿@model IEnumerable<KidShop.Models.tbl_Enrollment>
+
+@{
+    ViewData["Title"] = "Danh sách đơn đăng ký khóa học";
+}
+
+<div class="content-body">
+    <div class="container-fluid">
+        <div class="pagetitle">
+            <h2>Danh sách đơn đăng ký khóa học</h2>
+        </div>
+
+        <div class="mb-3">
+            <form method="get" class="d-flex gap-2">
+                <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Tìm kiếm khóa học / học viên / mã đơn" />
+                <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+            </form>
+        </div>
+
+        @if (TempData["Message"] != null)
+        {
+            <div class="alert alert-success">@TempData["Message"]</div>
+        }
+
+        <div class="card">
+            <div class="card-body table-responsive">
+                <table class="table table-bordered table-striped table-hover text-center">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Khóa học</th>
+                            <th>Học viên</th>
+                            <th>Số tiền</th>
+                            <th>Mã đơn</th>
+                            <th>Ngày đăng ký</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int count = (ViewBag.CurrentPage - 1) * 10 + 1;
+                        }
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@count</td>
+                                <td>@item.Course.CourseName</td>
+                                <td>@item.User?.FullName</td>
+                                <td>@String.Format("{0:N0}₫", item.Course.Price)</td>
+                                <td><b>@item.OrderCode</b></td>
+                                <td>@item.RegisterDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    @if (item.IsPaid)
+                                    {
+                                        <span class="badge bg-success">Đã thanh toán</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">Đang xử lý</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!item.IsPaid)
+                                    {
+                                        <form asp-area="Admin" asp-controller="PaymentCourse" asp-action="ConfirmPayment" method="post" style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.EnrollmentID" />
+                                            <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('Xác nhận đã nhận tiền?');">
+                                                Đã nhận tiền
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-success fw-bold">✓</span>
+                                    }
+                                </td>
+                            </tr>
+                            count++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Phân trang đơn giản -->
+        <nav aria-label="Page navigation" class="mt-3">
+            <ul class="pagination justify-content-center">
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link" href="?page=@i&search=@ViewBag.Search">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>

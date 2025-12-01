@@ -1,0 +1,154 @@
+﻿@using KidShop.Utilities
+@using KidShop.ViewModel
+@model KidShop.ViewModel.VideoDetailVM
+
+<!-- Breadcrumb Section Begin -->
+<section class="breadcrumb-section set-bg" data-setbg="/img/breadcrumb.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>@Model.Video.Title</h2>
+                    <div class="breadcrumb__option">
+                        <a asp-controller="Course" asp-action="Index">Trang chủ</a>
+                        <span>@Model.Video.Title</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Breadcrumb Section End -->
+<!-- Video Section Begin -->
+<section class="video-detail spad">
+    <div class="container-fluid px-4">
+        <div class="row">
+
+            <!-- ===== LEFT: MAIN VIDEO ===== -->
+            <div class="col-lg-8 col-md-12 mb-4">
+                <!-- Video Player -->
+                <div class="video-player mb-3">
+                    <iframe style="width:100%; height:480px;"
+                            src="@Model.Video.Link"
+                            title="@Model.Video.Title"
+                            frameborder="0"
+                            allowfullscreen>
+                    </iframe>
+                </div>
+
+                <!-- Video Title -->
+                <h3 class="fw-bold mb-2 text-dark">🎵 @Model.Video.Title</h3>
+
+                <!-- Stats & Actions -->
+                <div class="d-flex justify-content-between align-items-center mb-3 text-muted flex-wrap">
+                    <div>
+                        <span>Thời lượng: @Model.Video.DurationDisplay</span> •
+                        <span>Ngày tạo: @(Model.Video.CreatedDate?.ToString("dd/MM/yyyy") ?? "")</span>
+                    </div>
+                    <div class="mt-2 mt-md-0">
+                       
+                        <button class="btn btn-light me-2"><i class="bi bi-share"></i> Chia sẻ</button>
+                        <button class="btn btn-light"><i class="bi bi-save"></i> Tải xuống</button>
+                    </div>
+                </div>
+
+                <hr>
+
+                <!-- Channel Info -->
+                <div class="d-flex align-items-center mb-3">
+                    <img src="https://cdn-media.sforum.vn/storage/app/media/ctv_seo3/meme-meo-cuoi-5.jpg"
+                         class="rounded-circle me-3"
+                         alt="Kênh thiếu nhi"
+                         width="55" height="55">
+                    <div>
+                        <h6 class="mb-0 fw-bold">Kênh Bé Yêu Học</h6>
+                        
+                    </div>
+                    <button class="btn btn-danger btn-sm ms-auto text-white">Đăng ký</button>
+                </div>
+
+                <!-- Description -->
+                @if (!string.IsNullOrEmpty(Model.Video.Describe))
+                {
+                    <div class="bg-light p-3 rounded mb-4">
+                        <p>@Model.Video.Describe</p>
+                    </div>
+                }
+
+                <!-- Comment Section -->
+                <div class="comments mt-4">
+                    <h4 class="fw-bold mb-3">Bình luận </h4>
+
+                    <!-- Danh sách bình luận -->
+                    @if (Model.Comments != null && Model.Comments.Any())
+                    {
+                        <div class="blog__details__comments__list">
+                            @foreach (var cmt in Model.Comments)
+                            {
+                                <div class="blog__details__comment">
+                                    <div class="blog__details__comment__author-pic">
+                                        <img src="/img/avatar_default.jpg" alt="@cmt.FullName">
+                                    </div>
+
+                                    <div class="blog__details__comment__text">
+                                        <h6>@cmt.FullName <span>@cmt.CreatedDate?.ToString("dd/MM/yyyy HH:mm")</span></h6>
+                                        <p>@cmt.Contents</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p>Chưa có bình luận nào.</p>
+                    }
+
+                    <!-- Comment Form -->
+                    <div class="blog__details__comment__form mt-4">
+                        <h5>Viết bình luận</h5>
+
+                        <!-- Thông báo lỗi / thành công -->
+                        @if (TempData["CommentError"] != null)
+                        {
+                            <div class="alert alert-warning" style="margin-bottom: 10px;">
+                                @TempData["CommentError"]
+                            </div>
+                        }
+                        else if (TempData["CommentSuccess"] != null)
+                        {
+                            <div class="alert alert-success" style="margin-bottom: 10px;">
+                                @TempData["CommentSuccess"]
+                            </div>
+                        }
+
+                        <!-- Form thêm bình luận -->
+                        <form asp-controller="Video" asp-action="AddComment" method="post">
+                            <input type="hidden" name="videoId" value="@Model.Video.VideoID" />
+                            <textarea name="contents" rows="4" placeholder="Nội dung bình luận" required></textarea>
+                            <button type="submit">Gửi bình luận</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== RIGHT: VIDEO RECOMMENDATIONS ===== -->
+            <div class="col-lg-4 col-md-12">
+                <h6 class="fw-bold mb-3">🎬 Video liên quan</h6>
+                <div class="recommended-list">
+                    @foreach (var v in Model.RelatedVideos)
+                    {
+                        <div class="d-flex mb-3">
+                            <img src="@v.Image" class="rounded me-2" alt="@v.Title" style="width:160px;height:90px;object-fit:cover;">
+                            <div>
+                                <p class="fw-bold mb-1 small"><a asp-controller="Video" asp-action="VideoDetail" asp-route-id="@v.VideoID">@v.Title</a></p>
+                                <small class="text-muted">@v.DurationDisplay</small>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- Video Section End -->

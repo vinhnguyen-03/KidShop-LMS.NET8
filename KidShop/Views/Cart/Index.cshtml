@@ -1,0 +1,182 @@
+﻿ 
+@model KidShop.Models.tbl_Cart
+
+<!-- Breadcrumb Section Begin -->
+<section class="breadcrumb-section set-bg" data-setbg="/img/breadcrumb.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>Giỏ hàng</h2>
+                    <div class="breadcrumb__option">
+                        <a asp-controller="Home" asp-action="Index">Trang chủ</a>
+                        <span>Giỏ hàng</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Breadcrumb Section End -->
+<!-- Shoping Cart Section Begin -->
+<section class="shoping-cart spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="shoping__cart__table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="shoping__product">Tên sản phẩm</th>
+                                <th>Giá tiền</th>
+                                <th>Số lượng</th>
+                                <th>Tổng cộng</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Items.Any())
+                            {
+                                foreach (var item in Model.Items)
+                                {
+                                    var price = item.Product.PriceSale ?? item.Product.Price;
+                                    <tr>
+                                        <td class="shoping__cart__item">
+                                            <img src="@item.Product.Image" alt="@item.Product.ProductName"
+                                                 style="width:80px; height:80px; object-fit:cover;">
+                                            <h5>@item.Product.ProductName</h5>
+                                        </td>
+                                        <td class="shoping__cart__price">
+                                            @String.Format("{0:N0} đ", price)
+                                        </td>
+
+                                        <td class="shoping__cart__quantity">
+                                            <div class="quantity">
+                                                <div class="pro-qty">
+                                                    <input type="text" class="qty-input" value="@item.Quantity" data-id="@item.ProductID" />
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <td class="shoping__cart__total">
+                                            @String.Format("{0:N0} đ", price * item.Quantity)
+                                        </td>
+
+                                        <td class="shoping__cart__item__close">
+                                            <a asp-action="RemoveCart" asp-route-id="@item.CartItemID">
+                                                <span class="icon_close"></span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">
+                                        🛒 Giỏ hàng trống.
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        @if (Model != null && Model.Items.Any())
+        {
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="shoping__cart__btns">
+                        <a asp-controller="Product" asp-action="Index" class="primary-btn cart-btn">
+                            ← Tiếp tục mua sắm
+                        </a>
+                        <a asp-action="Clear" class="primary-btn cart-btn cart-btn-right">
+                            Xóa toàn bộ giỏ hàng
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="shoping__continue">
+                        <div class="shoping__discount">
+                            <h5>Mã giảm giá</h5>
+                            <form action="#">
+                                <input type="text" placeholder="Nhập mã giảm giá">
+                                <button type="submit" class="site-btn">Áp dụng</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="shoping__checkout">
+                        <h5>Tổng giỏ hàng</h5>
+                        @{
+                            var subtotal = Model.Items.Sum(i => (i.Product.PriceSale ?? i.Product.Price) * i.Quantity);
+                        }
+                        <ul>
+                            <li>Tạm tính <span>@String.Format("{0:N0} đ", subtotal)</span></li>
+                            <li>Tổng cộng <span>@String.Format("{0:N0} đ", subtotal)</span></li>
+                        </ul>
+                        <a href="@Url.Action("Checkout", "Order")" class="primary-btn">Tiến hành đặt hàng</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+<!-- Shoping Cart Section End -->
+@section Scripts {
+   
+    <script>
+        $(function () {
+
+            // Click + hoặc -
+            $(document).on("click", ".qtybtn", function () {
+                const input = $(this).siblings("input.qty-input");
+                let qty = parseInt(input.val());
+                const id = input.data("id");
+
+                if (isNaN(qty) || qty < 1) qty = 1;
+
+                if ($(this).hasClass("inc")) qty++;
+                else if ($(this).hasClass("dec") && qty > 1) qty--;
+
+                input.val(qty);
+                updateQuantity(id, qty);
+            });
+
+            // Nhập thủ công
+            $(document).on("change", ".qty-input", function () {
+                let qty = parseInt($(this).val());
+                const id = $(this).data("id");
+
+                if (isNaN(qty) || qty < 1) {
+                    qty = 1;
+                    $(this).val(qty);
+                }
+
+                updateQuantity(id, qty);
+            });
+
+            // Gửi AJAX cập nhật số lượng
+            function updateQuantity(id, qty) {
+                $.post("/Cart/UpdateQuantity", { productId: id, quantity: qty })
+                    .done(function (res) {
+                        if (res.success) {
+                            const row = $(`input[data-id='${id}']`).closest("tr");
+                            row.find(".shoping__cart__total").text(res.itemTotal);
+                            $(".shoping__checkout span").text(res.subtotal);
+                        } else {
+                            alert(res.message || "Không thể cập nhật giỏ hàng.");
+                        }
+                    })
+                    .fail(function () {
+                        alert("Lỗi kết nối. Vui lòng thử lại sau!");
+                    });
+            }
+        });
+    </script>
+}

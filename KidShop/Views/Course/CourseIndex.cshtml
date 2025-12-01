@@ -1,0 +1,175 @@
+﻿@using KidShop.ViewModel.Course
+@model CourseDetailVM
+
+<section class="breadcrumb-section set-bg" data-setbg="/img/breadcrumb.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>@Model.Course.CourseName</h2>
+                    <div class="breadcrumb__option">
+                        <a asp-controller="Course" asp-action="Index">Trang chủ</a>
+                        <span>@Model.Course.CourseName</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="course-watch spad">
+    <div class="container-fluid px-4">
+        <div class="row">
+            <!-- LEFT: MAIN VIDEO -->
+            <div class="col-lg-8 col-md-12 mb-4">
+                <h4 id="mainVideoTitle" class="fw-bold">@((Model.FirstVideo?.Title) ?? "Chưa có video")</h4>
+           
+                <div class="card shadow-sm p-3">
+                    <div id="mainVideoContainer">
+                        @if (Model.FirstVideo != null)
+                        {
+                            if (Model.FirstVideo.IsYouTube && !string.IsNullOrEmpty(Model.FirstVideo.Link))
+                            {
+                                <iframe style="width:100%; height:450px;"
+                                        src="@Model.FirstVideo.Link.Replace("watch?v=", "embed/")"
+                                        frameborder="0"
+                                        allowfullscreen></iframe>
+                            }
+                            else if (!string.IsNullOrEmpty(Model.FirstVideo.Link))
+                            {
+                                <video style="width:100%; height:450px;" controls>
+                                    <source src="@Model.FirstVideo.Link" type="video/mp4">
+                                    Trình duyệt không hỗ trợ video.
+                                </video>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted text-center">Khóa học chưa có video nào.</p>
+                        }
+                    </div>
+                </div>
+                <div id="quizContainer" class="mt-4">
+                    @Html.Partial("_QuizPartial", Model.Quizzes)
+                </div>
+            </div>
+
+            <!-- RIGHT: VIDEO LIST -->
+            <div class="col-lg-4 col-md-12">
+                <div class="card shadow-sm p-3">
+                    <h4 class="fw-bold mb-3">Danh sách bài học</h4>
+
+                    @if (Model.Videos != null && Model.Videos.Any())
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var video in Model.Videos)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center video-item"
+                                    data-link="@video.Link"
+                                    data-title="@video.Title"
+                                    data-isyoutube="@video.IsYouTube"
+                                    data-videoid="@video.CourseVideoID">
+                                    <span>@video.Title</span>
+                                    <span class="badge bg-secondary">@video.DurationDisplay</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Chưa có video nào trong khóa học.</p>
+                    }
+
+                    <hr />
+                    <p><strong>Giảng viên:</strong> @(Model.Lecturer?.LecturerName ?? "Chưa cập nhật")</p>
+                    <p><strong>Tổng số bài học:</strong> @Model.TotalVideos</p>
+                    <p><strong>Thời lượng dự kiến:</strong> @TimeSpan.FromSeconds(Model.Videos.Sum(v => v.Duration ?? 0)).ToString(@"hh\:mm\:ss")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+         document.addEventListener("DOMContentLoaded", function () {
+            const mainVideoContainer = document.getElementById("mainVideoContainer");
+            const titleEl = document.getElementById("mainVideoTitle");
+            const quizContainer = document.getElementById("quizContainer");
+
+            // Xử lý nhấn vào danh sách video
+            document.querySelectorAll(".video-item").forEach(item => {
+                item.addEventListener("click", function () {
+                    const link = this.dataset.link;
+                    const title = this.dataset.title;
+                    const isYouTube = this.dataset.isyoutube === "True";
+                    const videoId = this.dataset.videoid;
+
+                    // Cập nhật video
+                    titleEl.textContent = title;
+                    if (isYouTube) {
+                        mainVideoContainer.innerHTML = `<iframe width="100%" height="450" src="${link.replace("watch?v=", "embed/")}" frameborder="0" allowfullscreen></iframe>`;
+                    } else {
+                        mainVideoContainer.innerHTML = `<video width="100%" height="450" controls><source src="${link}" type="video/mp4">Trình duyệt không hỗ trợ video.</video>`;
+                    }
+
+                    // đánh dấu video đang xem
+                    document.querySelectorAll(".video-item").forEach(v => v.classList.remove("active"));
+                    this.classList.add("active");
+
+                    // Load quiz mới bằng AJAX
+                    fetch(`/Course/GetQuizByVideo?videoId=${videoId}`)
+                        .then(res => res.text())
+                        .then(html => {
+                            quizContainer.innerHTML = html;
+                        });
+                });
+            });
+
+            // Event delegation cho nút "Kiểm tra đáp án"
+            quizContainer.addEventListener("click", function(e){
+                if (e.target && e.target.id === "checkQuizBtn") {
+                    const quizItems = quizContainer.querySelectorAll(".quiz-item");
+                    quizItems.forEach(item => {
+                        const selected = item.querySelector('input.quiz-option:checked');
+                        const feedback = item.querySelector(".quiz-feedback");
+                        const correctAnswer = (item.dataset.answer || "").trim();
+
+                        if (!selected) {
+                            feedback.textContent = "Bạn chưa chọn đáp án!";
+                            feedback.style.color = "orange";
+                            feedback.style.display = "block";
+                            return;
+                        }
+
+                        if (selected.value.trim() === correctAnswer) {
+                            feedback.textContent = "✅ Đúng!";
+                            feedback.style.color = "green";
+                        } else {
+                            feedback.textContent = `❌ Sai! Đáp án đúng là: ${correctAnswer}`;
+                            feedback.style.color = "red";
+                        }
+                        feedback.style.display = "block";
+                    });
+                }
+            });
+        });
+    </script>
+
+    <style>
+        .video-item.active {
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px;
+        }
+
+        .video-item {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+            .video-item:hover {
+                background-color: #e6f0ff;
+            }
+    </style>
+}

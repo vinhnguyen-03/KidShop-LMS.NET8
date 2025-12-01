@@ -1,0 +1,103 @@
+﻿@using KidShop.Models;
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+@model IPagedList<tbl_Introduce>
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<div class="content-body">
+    <div class="container-fluid">
+        <div class="pagetitle">
+            <h2>Danh Sách Giới Thiệu</h2>
+        </div>
+
+        <p>
+            <a type="button" class="btn btn-success" asp-area="Admin" asp-controller="Introduce" asp-action="Create">
+                <i class="bi bi-file-earmark-text me-1"></i>Thêm giới thiệu
+            </a>
+        </p>
+        <!-- Form tìm kiếm -->
+        <form method="get" asp-action="Index" class="mb-3">
+            <div class="input-group">
+                <input type="text" name="search" value="@ViewBag.Search"
+                       class="form-control" placeholder="Tìm theo tieu de..." />
+                <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+            </div>
+        </form>
+        <div class="col-lg-12">
+            <div class="card">
+
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-responsive-md">
+                            <thead>
+                                <tr>
+                                    <th style="width:50px;">
+                                        <div class="custom-control custom-checkbox checkbox-success check-lg mr-3">
+                                            <input type="checkbox" class="custom-control-input" id="checkAll">
+                                            <label class="custom-control-label" for="checkAll"></label>
+                                        </div>
+                                    </th>
+                                    <th>STT</th>
+                                    <th>Tiêu Đề</th>
+                                    <th>Icon</th>
+                                    <th>Background</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var count = 1;
+                                }
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td class="text center">
+                                            <div class="custom-control custom-checkbox checkbox-success check-lg mr-3">
+                                                <input type="checkbox" class="custom-control-input" id="customCheckBox_@item.IntroduceID">
+                                                <label class="custom-control-label" for="customCheckBox_@item.IntroduceID"></label>
+                                            </div>
+                                        </td>
+                                        <td class="text center"><strong>@count</strong></td>
+
+                                        <td>@item.Title</td>
+                                        <td>@item.Icon</td>
+                                        <td>@item.Background_color</td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <a asp-area="Admin" asp-controller="Introduce" asp-action="Edit"
+                                                   asp-route-id="@item.IntroduceID"
+                                                   class="btn btn-primary shadow btn-xs sharp mr-1">
+                                                    <i class="fa fa-pencil"></i>
+                                                </a>
+                                                <a asp-area="Admin" asp-controller="Introduce" asp-action="Delete"
+                                                   asp-route-id="@item.IntroduceID"
+                                                   class="btn btn-danger shadow btn-xs sharp">
+                                                    <i class="fa fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    count++;
+                                }
+                            </tbody>
+                        </table>
+                        <!-- Phân trang -->
+                        <div class="text-center mt-3">
+                            @Html.PagedListPager(Model, page => Url.Action("Index",
+                            new { page, search = ViewBag.Search }),
+                                                        new PagedListRenderOptions()
+                                                        {
+                                                            LiElementClasses = new[] { "page-item" },
+                                                            PageClasses = new[] { "page-link" }
+                                                        })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

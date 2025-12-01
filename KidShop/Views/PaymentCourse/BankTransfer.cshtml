@@ -1,0 +1,79 @@
+﻿@model KidShop.Models.tbl_Enrollment
+@{
+    ViewData["Title"] = "Hướng dẫn chuyển khoản";
+}
+
+<section class="breadcrumb-section set-bg" data-setbg="/img/breadcrumb.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>Hướng dẫn chuyển khoản</h2>
+                    <div class="breadcrumb__option">
+                        <a asp-controller="Course" asp-action="Index">Trang chủ</a>
+                        <span>Hướng dẫn chuyển khoản</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="bank spad">
+    <div class="container text-center">
+
+        <p>
+            Đơn hàng tự động hủy sau:
+            <span id="countdown" style="color:red; font-weight:bold;">15:00</span>
+        </p>
+
+        <h3>Quét mã QR để thanh toán</h3>
+        <p>Mở app ngân hàng và quét mã QR. Nội dung chuyển khoản là <b>@Model.OrderCode</b>.</p>
+
+        <!-- QR CODE -->
+        <div>
+            <img src="@ViewBag.QRImageUrl" alt="QR Code" style="width:280px; height:280px;" />
+        </div>
+
+        <div style="margin-top:20px;">
+            <h5>Ngân hàng</h5>
+            <p><strong>@ViewBag.BankName</strong></p>
+
+            <h5>Số tài khoản</h5>
+            <p><strong>@ViewBag.AccountNo</strong></p>
+
+            <h5>Tên tài khoản</h5>
+            <p><strong>@ViewBag.AccountName</strong></p>
+
+            <h5>Số tiền</h5>
+            <p style="font-size:22px; font-weight:bold;">
+                @String.Format("{0:N0}₫", Model.Course.Price)
+            </p>
+
+            <h5>Nội dung chuyển khoản</h5>
+            <p style="color:red; font-weight:bold; font-size:20px;">
+                @Model.OrderCode
+            </p>
+        </div>
+
+        <p style="margin-top:20px; color:#777;">
+            Nếu đơn hàng của bạn không tự động kích hoạt sau khi chuyển khoản 5 phút, vui lòng liên hệ hỗ trợ.
+        </p>
+    </div>
+</section>
+
+<!-- Đếm ngược thời gian -->
+<script>
+    let total = 15 * 60; // 15 phút
+
+    function updateCountdown() {
+        let m = Math.floor(total / 60);
+        let s = total % 60;
+        document.getElementById("countdown").innerText =
+            (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+
+        if (total > 0) total--;
+    }
+
+    setInterval(updateCountdown, 1000);
+</script>

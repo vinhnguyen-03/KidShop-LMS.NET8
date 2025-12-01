@@ -1,0 +1,41 @@
+﻿@model IList<tbl_Menu>
+@using KidShop.Models;
+@using KidShop.Utilities;
+
+<!-- Menu -->
+ 
+    <ul>
+        @foreach (var menu in Model.Where(m => m.Levels == 1).OrderBy(n => n.MenuOrder))
+        {
+            var Pid = menu.MenuID;
+            string url = Functions.TitleSlugGeneration("list", menu.MenuName ?? "", menu.MenuID);
+            if (!string.IsNullOrEmpty(menu.Link))
+            {
+                url = menu.Link;
+            }
+            var Smenu = Model.Where(p => p.ParentID == Pid).OrderBy(p => p.MenuOrder).ToList();
+
+            @if (Smenu.Count == 0)
+            {
+                <li><a href="/@url">@menu.MenuName</a></li>
+            }
+            else
+            {
+                <li>
+                    <a href="/@url">@menu.MenuName</a>
+
+                    <ul class="header__menu__dropdown">
+                        @foreach (var smn in Smenu)
+                        {
+                            
+                           
+                            <li><a href="/@smn.Link">@smn.MenuName</a></li>
+                        }
+                    </ul>
+                </li>
+            }
+        }
+    </ul>
+
+<!--  Menu End -->
+ 

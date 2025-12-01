@@ -1,0 +1,118 @@
+﻿@using KidShop.Utilities
+@model KidShop.Models.tbl_Product
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<div class="content-body">
+    <div class="container-fluid">
+
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Sửa sản phẩm</h4>
+            </div>
+            <div class="card-body">
+                <div class="form-validation">
+                    <form asp-action="Edit" method="post" class="form-valide" novalidate="novalidate">
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                        <input asp-for="ProductID" type="hidden" />
+
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <label asp-for="ProductName">Tên sản phẩm</label>
+                                <input asp-for="ProductName" class="form-control" placeholder="Nhập tên sản phẩm" />
+                                <span asp-validation-for="ProductName" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label asp-for="Description">Mô tả</label>
+                                <input asp-for="Description" class="form-control" placeholder="Nhập mô tả" />
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label asp-for="Detail">Nội dung chi tiết</label>
+                                <textarea asp-for="Detail" class="form-control" rows="6" placeholder="Nhập nội dung"></textarea>
+                                <span asp-validation-for="Detail" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Price">Giá sản phẩm</label>
+                                <input asp-for="Price" class="form-control" placeholder="Nhập giá san phẩm" />
+                                <span asp-validation-for="Price" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="PriceSale">Giam giá</label>
+                                <input asp-for="PriceSale" class="form-control" placeholder="Nhập giá san phẩm" />
+                                <span asp-validation-for="PriceSale" class="text-danger"></span>
+                            </div>
+
+                            
+                            <div class="col-md-6">
+                                <label asp-for="Brand">Thương hiệu</label>
+                                <input asp-for="Brand" class="form-control" placeholder="Nhập Thương hiệu sản phẩm" />
+                                <span asp-validation-for="Brand" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Category_ProductID">Loại sản phẩm</label>
+                                <select asp-for="Category_ProductID" asp-items="@(new SelectList(ViewBag.mnList, "Value", "Text"))" class="form-control"></select>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label asp-for="Tags"> Tags </label>
+                                <input asp-for="Tags" class="form-control" placeholder="Nhập Tags " />
+                                <span asp-validation-for="Tags" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="control-label">Hình ảnh</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <button class="btn btn-success" type="button" onclick="openDialogImage()">Choose a pic</button>
+                                </div>
+                                <input type="text" class="form-control" asp-for="Image" id="file_input1" aria-describedby="button-addon2">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-6 d-flex align-items-center">
+                                <label class="mb-0 mr-2">Hiển thị sản phẩm nổi bật</label>
+                                @Html.CheckBox("Is_featured", Model.Is_featured, new { @class = "mr-2" })
+                                <span>Cho phép hiển thị</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-6 d-flex align-items-center">
+                                <label class="mb-0 mr-2">Hiển thị</label>
+                                @Html.CheckBox("IsActive", Model.IsActive, new { @class = "mr-2" })
+                                <span>Cho phép hiển thị</span>
+                            </div>
+                        </div>
+                        <input asp-for="Quantity" type="hidden" />
+                        <div class="form-group row">
+                            <div class="col-md-12 text-right">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-file-plus-fill"></i> Lưu
+                                </button>
+                                <a asp-controller="Product" asp-action="Index" class="btn btn-warning ml-2">Quay lại</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section HeadContent {
+    @{
+        var summerNote = new KidShop.Areas.Admin.Models.SummerNote("#Detail");
+        <partial name="_SummerNote" model="summerNote" />
+    }
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
